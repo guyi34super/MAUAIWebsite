@@ -4,11 +4,22 @@ import { motion } from 'framer-motion';
 import { Mail, MessageSquare, CheckCircle, Send } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
+const IS_DEV = import.meta.env.DEV;
 const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'team.mau.ai@gmail.com';
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
 const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
 const HAS_EMAILJS = Boolean(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY);
+
+const EMAILJS_TEMPLATE_PARAMS = [
+  'from_name',
+  'from_email',
+  'company',
+  'service',
+  'message',
+  'reply_to',
+  'to_email',
+];
 
 function useReveal() {
   const ref = useRef(null);
@@ -85,38 +96,53 @@ export default function Contact() {
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
+  const buildEmailJsParams = () => ({
+    from_name: form.name,
+    from_email: form.email,
+    company: form.company || 'Not provided',
+    service: form.service,
+    message: form.message,
+    to_email: CONTACT_EMAIL,
+    reply_to: form.email,
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('loading');
     setErrMsg('');
 
-    if (HAS_EMAILJS) {
-      try {
-        await emailjs.send(
-          EMAILJS_SERVICE_ID,
-          EMAILJS_TEMPLATE_ID,
-          {
-            from_name: form.name,
-            from_email: form.email,
-            company: form.company || 'Not provided',
-            service: form.service,
-            message: form.message,
-            to_email: CONTACT_EMAIL,
-            reply_to: form.email,
-          },
-          EMAILJS_PUBLIC_KEY,
+    if (!HAS_EMAILJS) {
+      if (IS_DEV) {
+        setErrMsg(
+          'Contact form is not configured. Add VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, and VITE_EMAILJS_PUBLIC_KEY to .env.local — see README.',
         );
-        setStatus('success');
-        setForm({ name: '', email: '', company: '', service: '', message: '' });
-      } catch (err) {
-        console.error(err);
-        setErrMsg('Something went wrong. Please email us directly at team.mau.ai@gmail.com');
         setStatus('error');
+        return;
       }
+
+      submitViaFormPost(form);
       return;
     }
 
-    submitViaFormPost(form);
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        buildEmailJsParams(),
+        EMAILJS_PUBLIC_KEY,
+      );
+      setStatus('success');
+      setForm({ name: '', email: '', company: '', service: '', message: '' });
+    } catch (err) {
+      console.error('EmailJS error:', err);
+      const detail = err?.text || err?.message;
+      setErrMsg(
+        detail
+          ? `Could not send message (${detail}). Please email us at ${CONTACT_EMAIL}.`
+          : `Something went wrong. Please email us directly at ${CONTACT_EMAIL}.`,
+      );
+      setStatus('error');
+    }
   };
 
   const inputStyle = {
@@ -240,6 +266,22 @@ export default function Contact() {
             ) : (
               <>
                 <h3 className="font-bold text-xl mb-7" style={{ color: '#0d0d12' }}>Send Us a Message</h3>
+
+                {IS_DEV && !HAS_EMAILJS && (
+                  <p className="text-sm mb-5 rounded-lg p-4"
+                    style={{ color: '#92400e', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)' }}>
+                    Dev mode: EmailJS is not configured. Copy <code>.env.example</code> to <code>.env.local</code> and add your keys.
+                    Required template variables: {EMAILJS_TEMPLATE_PARAMS.join(', ')}.
+                  </p>
+                )}
+
+                {!IS_DEV && !HAS_EMAILJS && (
+                  <p className="text-sm mb-5 rounded-lg p-4"
+                    style={{ color: '#6b7280', background: '#f9fafb', border: '1px solid #e5e7eb' }}>
+                    Submitting will briefly redirect you to complete delivery. First-time senders must activate the form via the email sent to {CONTACT_EMAIL}.
+                  </p>
+                )}
+
                 <form onSubmit={handleSubmit} noValidate>
                   <input type="text" name="_honey" tabIndex={-1} autoComplete="off"
                     style={{ display: 'none' }} aria-hidden="true" />
