@@ -9,20 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12"
           style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <div className="md:col-span-2">
-            {/* Footer logo (white version) */}
-            <Link to="/" className="flex items-center gap-3 no-underline">
-              <svg width="34" height="34" viewBox="0 0 42 42" fill="none">
-                <rect x="1" y="1" width="40" height="40" rx="9" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-                <path d="M9 31 L9 13 L21 25 L33 13 L33 31" fill="none" stroke="white" strokeWidth="2.6" strokeLinejoin="round" strokeLinecap="round" />
-                <path d="M15 36 L21 30 L27 36 Z" fill="#ff4757" />
-              </svg>
-              <div className="flex flex-col">
-                <span style={{ fontWeight: 800, letterSpacing: '3px', fontSize: '1.1rem', color: 'white', lineHeight: 1 }}>
-                  MAU<span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'rgba(255,255,255,0.5)', verticalAlign: 'super', letterSpacing: '1px' }}>ai</span>
-                </span>
-                <span style={{ fontSize: '0.42rem', letterSpacing: '3px', color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>INTELLIGENCE THAT WORKS</span>
-              </div>
-            </Link>
+            <Logo variant="dark" size="sm" />
             <p className="mt-5 text-sm leading-7" style={{ color: 'rgba(255,255,255,0.45)', maxWidth: 280 }}>
               Transforming Mauritian businesses through practical, measurable AI solutions.
             </p>

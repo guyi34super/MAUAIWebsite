@@ -48,7 +48,7 @@ function validateForm(form) {
   return { name, company, service: form.service, message };
 }
 
-function buildMailtoUrl(form) {
+function buildEmailContent(form) {
   const subject = `MAU AI inquiry — ${form.service}`;
   const body = [
     `Name: ${form.name}`,
@@ -59,8 +59,35 @@ function buildMailtoUrl(form) {
     form.message,
   ].join('\n');
 
-  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return { to: CONTACT_EMAIL, subject, body };
 }
+
+function buildProviderUrl(providerId, form) {
+  const { to, subject, body } = buildEmailContent(form);
+  const encodedTo = encodeURIComponent(to);
+  const encodedSubject = encodeURIComponent(subject);
+  const encodedBody = encodeURIComponent(body);
+
+  switch (providerId) {
+    case 'gmail':
+      return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodedTo}&su=${encodedSubject}&body=${encodedBody}`;
+    case 'outlook':
+      return `https://outlook.live.com/mail/0/deeplink/compose?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`;
+    case 'yahoo':
+      return `https://compose.mail.yahoo.com/?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`;
+    case 'default':
+      return `mailto:${to}?subject=${encodedSubject}&body=${encodedBody}`;
+    default:
+      return null;
+  }
+}
+
+const EMAIL_PROVIDERS = [
+  { id: 'gmail', label: 'Gmail', description: 'Open in Gmail' },
+  { id: 'outlook', label: 'Outlook', description: 'Open in Outlook' },
+  { id: 'yahoo', label: 'Yahoo Mail', description: 'Open in Yahoo Mail' },
+  { id: 'default', label: 'Default App', description: 'Use your device email app' },
+];
 
 export default function Contact() {
   useSEO({
@@ -72,6 +99,8 @@ export default function Contact() {
 
   const [form, setForm] = useState({ name: '', company: '', service: '', message: '' });
   const [status, setStatus] = useState('idle');
+  const [pendingForm, setPendingForm] = useState(null);
+  const [selectedProvider, setSelectedProvider] = useState('');
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
@@ -79,9 +108,31 @@ export default function Contact() {
     e.preventDefault();
     const validated = validateForm(form);
     if (!validated) return;
-    window.location.href = buildMailtoUrl(validated);
+    setPendingForm(validated);
+    setStatus('choose-provider');
+  };
+
+  const handleProviderSelect = (providerId) => {
+    if (!pendingForm) return;
+    const url = buildProviderUrl(providerId, pendingForm);
+    if (!url) return;
+
+    setSelectedProvider(EMAIL_PROVIDERS.find(p => p.id === providerId)?.label || 'your email app');
+
+    if (providerId === 'default') {
+      window.location.href = url;
+    } else {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
     setStatus('success');
     setForm({ name: '', company: '', service: '', message: '' });
+    setPendingForm(null);
+  };
+
+  const handleBackToForm = () => {
+    setStatus('idle');
+    setPendingForm(null);
   };
 
   const inputStyle = {
@@ -199,9 +250,56 @@ export default function Contact() {
                 </div>
                 <h3 className="font-bold text-2xl mb-3" style={{ color: '#0d0d12' }}>Email Ready!</h3>
                 <p className="text-sm leading-8" style={{ color: '#6b7280', maxWidth: 360 }}>
-                  Your email app should have opened with a message to {CONTACT_EMAIL}.
-                  Please click Send in your email app to deliver your inquiry.
+                  {selectedProvider} should have opened with a draft message to {CONTACT_EMAIL}.
+                  Please review the message and click Send to deliver your inquiry.
                 </p>
+              </motion.div>
+            ) : status === 'choose-provider' ? (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <h3 className="font-bold text-xl mb-3" style={{ color: '#0d0d12' }}>Choose Your Email</h3>
+                <p className="text-sm leading-7 mb-7" style={{ color: '#6b7280' }}>
+                  Select where you want to compose and send your message to {CONTACT_EMAIL}.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                  {EMAIL_PROVIDERS.map(({ id, label, description }) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => handleProviderSelect(id)}
+                      className="rounded-xl p-4 text-left transition-all"
+                      style={{
+                        background: '#fff',
+                        border: '1px solid #e0e0e8',
+                        cursor: 'pointer',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.borderColor = '#0d0d12';
+                        e.currentTarget.style.boxShadow = '0 0 0 3px rgba(13,13,18,0.08)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.borderColor = '#e0e0e8';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      <p className="font-bold text-sm mb-1" style={{ color: '#0d0d12' }}>{label}</p>
+                      <p className="text-xs" style={{ color: '#6b7280' }}>{description}</p>
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleBackToForm}
+                  className="text-sm font-semibold"
+                  style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                >
+                  Back to form
+                </button>
               </motion.div>
             ) : (
               <>
@@ -257,7 +355,7 @@ export default function Contact() {
                   </button>
 
                   <p className="text-xs text-center mt-4" style={{ color: '#9ca3af' }}>
-                    Opens your email app with a message to {CONTACT_EMAIL}
+                    Next, choose Gmail, Outlook, Yahoo Mail, or your default email app
                   </p>
                 </form>
               </>
