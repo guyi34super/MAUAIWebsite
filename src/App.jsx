@@ -31,7 +31,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fallback = setTimeout(() => setLoading(false), 5000);
+    const fallback = setTimeout(() => setLoading(false), 3000);
     return () => clearTimeout(fallback);
   }, []);
 
