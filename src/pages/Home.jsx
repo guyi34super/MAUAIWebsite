@@ -273,10 +273,10 @@ export default function Home() {
               </p>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  ['Pydiah Reezvi-Mathiah', 'Founder & MD'],
-                  ['Bhavish', 'Director of Technology'],
-                  ['Rushal', 'Director of Engineering'],
-                  ['Taj', 'Director of Operations'],
+                  ['Reezvi Pydiah', 'Founder & MD'],
+                  ['Bhavish Nobeen', 'Director of Technology'],
+                  ['Rushal Seeruthun', 'Director of Engineering'],
+                  ['Taj Aundoo', 'Director of Operations'],
                 ].map(([name, role]) => (
                   <div key={name} className="glass-card hover-glow rounded-xl p-4" style={{ border: '1px solid #e8e8ec' }}>
                     <p className="font-bold text-sm" style={{ color: '#0d0d12' }}>{name}</p>

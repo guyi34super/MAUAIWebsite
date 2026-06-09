@@ -9,6 +9,8 @@ import LoadingScreen from './components/LoadingScreen';
 import Home from './pages/Home';
 import Services from './pages/Services';
 import Contact from './pages/Contact';
+import Privacy from './pages/Privacy';
+import CookieNotice from './components/CookieNotice';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -23,6 +25,7 @@ function Layout({ children }) {
       <Navbar />
       <main className="relative z-10">{children}</main>
       <Footer />
+      <CookieNotice />
     </>
   );
 }
@@ -46,6 +49,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
           </Routes>
         </Layout>
       </BrowserRouter>

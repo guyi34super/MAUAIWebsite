@@ -74,9 +74,17 @@ export default function Footer() {
           <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
             &copy; {new Date().getFullYear()} MAU AI. All rights reserved.
           </p>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
-            Intelligence That Works — Mauritius
-          </p>
+          <div className="flex items-center gap-4">
+            <Link to="/privacy" className="text-xs no-underline transition-colors"
+              style={{ color: 'rgba(255,255,255,0.3)' }}
+              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.6)'}
+              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.3)'}>
+              Privacy Policy
+            </Link>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+              Intelligence That Works — Mauritius
+            </p>
+          </div>
         </div>
       </div>
     </footer>
