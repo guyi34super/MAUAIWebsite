@@ -199,36 +199,6 @@ export default function Home() {
           >
             <Robot />
           </motion.div>
-
-          {/* LEFT floating panels */}
-          <div className="absolute left-6 xl:left-10 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-3 z-20" style={{ maxWidth: 200 }}>
-            <FloatPanel delay={0.8} style={{ position: 'relative' }}>
-              <div className="flex items-center gap-2 mb-1">
-                <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#0be881' }} />
-                <p style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '1.5px', color: '#555', textTransform: 'uppercase' }}>
-                  AI CHATBOT LIVE
-                </p>
-              </div>
-              <p style={{ fontSize: '0.72rem', fontWeight: 800, color: '#0d0d12' }}>247 LEADS CAPTURED</p>
-            </FloatPanel>
-
-            <FloatPanel delay={1.0} style={{ position: 'relative' }}>
-              <p style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '1.5px', color: '#555', textTransform: 'uppercase', marginBottom: 4 }}>
-                RESPONSE TIME
-              </p>
-              <p style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0d0d12' }}>0.3s</p>
-            </FloatPanel>
-
-            <FloatPanel delay={1.1} style={{ position: 'relative' }}>
-              <p style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '1.5px', color: '#555', textTransform: 'uppercase', marginBottom: 4 }}>
-                AI RECEPTIONIST
-              </p>
-              <div className="flex items-center gap-1.5">
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff4757', animation: 'pulse 1.5s infinite' }} />
-                <p style={{ fontSize: '0.7rem', fontWeight: 700, color: '#0d0d12' }}>ONLINE 24/7</p>
-              </div>
-            </FloatPanel>
-          </div>
         </div>
 
         {/* Bottom left — BIG headline like ChainGPT */}
