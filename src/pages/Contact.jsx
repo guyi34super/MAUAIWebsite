@@ -41,12 +41,7 @@ function buildMailtoUrl(form) {
     form.message,
   ].join('\n');
 
-  const params = new URLSearchParams({
-    subject,
-    body,
-  });
-
-  return `mailto:${CONTACT_EMAIL}?${params.toString()}`;
+  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 export default function Contact() {
