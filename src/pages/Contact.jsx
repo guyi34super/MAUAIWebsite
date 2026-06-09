@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, MessageSquare, CheckCircle, Send } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'team.mau.ai@gmail.com';
-const FORM_ENDPOINT = `https://formsubmit.co/ajax/${encodeURIComponent(CONTACT_EMAIL)}`;
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+const HAS_EMAILJS = Boolean(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY);
 
 function useReveal() {
   const ref = useRef(null);
@@ -30,10 +35,53 @@ const SERVICES = [
   'Not sure yet — need advice',
 ];
 
+function submitViaFormPost(form) {
+  const hiddenForm = document.createElement('form');
+  hiddenForm.action = `https://formsubmit.co/${CONTACT_EMAIL}`;
+  hiddenForm.method = 'POST';
+  hiddenForm.acceptCharset = 'UTF-8';
+  hiddenForm.style.display = 'none';
+
+  const fields = {
+    name: form.name,
+    email: form.email,
+    company: form.company || 'Not provided',
+    service: form.service,
+    message: form.message,
+    _subject: `MAU AI inquiry — ${form.service}`,
+    _template: 'table',
+    _captcha: 'false',
+    _next: `${window.location.origin}/contact?sent=1`,
+  };
+
+  Object.entries(fields).forEach(([name, value]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value;
+    hiddenForm.appendChild(input);
+  });
+
+  document.body.appendChild(hiddenForm);
+  hiddenForm.submit();
+}
+
 export default function Contact() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [form, setForm] = useState({ name: '', email: '', company: '', service: '', message: '' });
   const [status, setStatus] = useState('idle');
   const [errMsg, setErrMsg] = useState('');
+
+  useEffect(() => {
+    if (searchParams.get('sent') === '1') {
+      setStatus('success');
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    if (HAS_EMAILJS) emailjs.init(EMAILJS_PUBLIC_KEY);
+  }, []);
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
@@ -41,41 +89,34 @@ export default function Contact() {
     e.preventDefault();
     setStatus('loading');
     setErrMsg('');
-    try {
-      const response = await fetch(FORM_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          company: form.company || 'Not provided',
-          service: form.service,
-          message: form.message,
-          _subject: `MAU AI inquiry — ${form.service}`,
-          _template: 'table',
-          _replyto: form.email,
-        }),
-      });
 
-      const data = await response.json();
-      if (!response.ok || data.success !== 'true') {
-        throw new Error(data.message || 'Failed to send message');
+    if (HAS_EMAILJS) {
+      try {
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          {
+            from_name: form.name,
+            from_email: form.email,
+            company: form.company || 'Not provided',
+            service: form.service,
+            message: form.message,
+            to_email: CONTACT_EMAIL,
+            reply_to: form.email,
+          },
+          EMAILJS_PUBLIC_KEY,
+        );
+        setStatus('success');
+        setForm({ name: '', email: '', company: '', service: '', message: '' });
+      } catch (err) {
+        console.error(err);
+        setErrMsg('Something went wrong. Please email us directly at team.mau.ai@gmail.com');
+        setStatus('error');
       }
-
-      setStatus('success');
-      setForm({ name: '', email: '', company: '', service: '', message: '' });
-    } catch (err) {
-      console.error(err);
-      setErrMsg(
-        err.message === 'Failed to fetch'
-          ? 'Network error. Check your connection or email us at team.mau.ai@gmail.com'
-          : 'Something went wrong. Please email us directly at team.mau.ai@gmail.com',
-      );
-      setStatus('error');
+      return;
     }
+
+    submitViaFormPost(form);
   };
 
   const inputStyle = {
@@ -200,7 +241,7 @@ export default function Contact() {
               <>
                 <h3 className="font-bold text-xl mb-7" style={{ color: '#0d0d12' }}>Send Us a Message</h3>
                 <form onSubmit={handleSubmit} noValidate>
-                  <input type="text" name="_honey" value="" readOnly tabIndex={-1} autoComplete="off"
+                  <input type="text" name="_honey" tabIndex={-1} autoComplete="off"
                     style={{ display: 'none' }} aria-hidden="true" />
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
