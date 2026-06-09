@@ -1,19 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, MessageSquare, CheckCircle, Send } from 'lucide-react';
-import emailjs from '@emailjs/browser';
 
-/*
-  EmailJS Setup (one-time):
-  1. Sign up at https://www.emailjs.com (free tier: 200 emails/month)
-  2. Add Gmail service → connect team.mau.ai@gmail.com
-  3. Create an Email Template with these variables:
-       {{from_name}}, {{from_email}}, {{company}}, {{service}}, {{message}}
-  4. Replace the three placeholders below with your actual IDs:
-*/
-const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
+const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'team.mau.ai@gmail.com';
+const FORM_ENDPOINT = `https://formsubmit.co/ajax/${encodeURIComponent(CONTACT_EMAIL)}`;
 
 function useReveal() {
   const ref = useRef(null);
@@ -50,25 +40,40 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('loading');
+    setErrMsg('');
     try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          from_name:  form.name,
-          from_email: form.email,
-          company:    form.company,
-          service:    form.service,
-          message:    form.message,
-          to_email:   'team.mau.ai@gmail.com',
-          reply_to:   form.email,
+      const response = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
         },
-        EMAILJS_PUBLIC_KEY,
-      );
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          company: form.company || 'Not provided',
+          service: form.service,
+          message: form.message,
+          _subject: `MAU AI inquiry — ${form.service}`,
+          _template: 'table',
+          _replyto: form.email,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || data.success !== 'true') {
+        throw new Error(data.message || 'Failed to send message');
+      }
+
       setStatus('success');
+      setForm({ name: '', email: '', company: '', service: '', message: '' });
     } catch (err) {
       console.error(err);
-      setErrMsg('Something went wrong. Please email us directly at team.mau.ai@gmail.com');
+      setErrMsg(
+        err.message === 'Failed to fetch'
+          ? 'Network error. Check your connection or email us at team.mau.ai@gmail.com'
+          : 'Something went wrong. Please email us directly at team.mau.ai@gmail.com',
+      );
       setStatus('error');
     }
   };
@@ -195,6 +200,8 @@ export default function Contact() {
               <>
                 <h3 className="font-bold text-xl mb-7" style={{ color: '#0d0d12' }}>Send Us a Message</h3>
                 <form onSubmit={handleSubmit} noValidate>
+                  <input type="text" name="_honey" value="" readOnly tabIndex={-1} autoComplete="off"
+                    style={{ display: 'none' }} aria-hidden="true" />
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                     <div>
