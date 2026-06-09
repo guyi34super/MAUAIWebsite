@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, MessageSquare, CheckCircle, Send } from 'lucide-react';
+import useSEO from '../hooks/useSEO';
 
 const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'team.mau.ai@gmail.com';
 
@@ -62,6 +63,13 @@ function buildMailtoUrl(form) {
 }
 
 export default function Contact() {
+  useSEO({
+    title: 'Contact MAU AI — Book a Free AI Consultation in Mauritius',
+    description: 'Get in touch with MAU AI — Mauritius\'s leading AI solutions company. Book a free consultation to discover how AI can transform your business in Mauritius or Africa.',
+    keywords: 'contact MAU AI, AI consultation Mauritius, book AI demo Africa, AI solutions Mauritius contact, free AI consultation',
+    url: 'https://mauai.co/contact',
+  });
+
   const [form, setForm] = useState({ name: '', company: '', service: '', message: '' });
   const [status, setStatus] = useState('idle');
 

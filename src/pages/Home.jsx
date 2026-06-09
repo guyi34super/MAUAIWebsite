@@ -5,9 +5,10 @@ import {
   Bot, UserCheck, Settings2, Globe, Megaphone, Mic2,
   Clock, TrendingUp, DollarSign, Zap, Scaling, Target,
   Building2, Hotel, Home as HomeIcon, Briefcase, GraduationCap,
-  ShoppingCart, Landmark, ArrowRight, ChevronRight,
+  ShoppingCart, Landmark, ArrowRight, ChevronRight, MapPin, ChevronDown,
 } from 'lucide-react';
 import Robot from '../components/Robot';
+import useSEO from '../hooks/useSEO';
 
 /* ── scroll reveal ── */
 function useReveal(delay = 0) {
@@ -89,6 +90,39 @@ const INDUSTRIES = [
   { Icon: Landmark,      label: 'Finance' },
 ];
 
+const AFRICA_POINTS = [
+  { title: 'Mauritius: Africa\'s Tech Gateway', desc: 'Mauritius ranks among Africa\'s top business destinations. MAU AI is built here to serve the continent.' },
+  { title: 'Multilingual AI for Africa', desc: 'English, French and Creole — covering both Anglophone and Francophone Africa with culturally aware AI.' },
+  { title: 'Serving the Continent', desc: 'From East Africa to Southern Africa, our AI solutions are designed for the pace and scale of the African market.' },
+];
+
+const FAQS = [
+  {
+    q: 'What is MAU AI?',
+    a: 'MAU AI is Mauritius\'s leading artificial intelligence company. We build custom AI chatbots, AI virtual receptionists, workflow automation, AI websites, AI marketing systems, and AI voice interfaces for businesses across Mauritius and Africa.',
+  },
+  {
+    q: 'Which AI company is based in Mauritius?',
+    a: 'MAU AI is Mauritius\'s top AI solutions company, headquartered in Mauritius. We serve businesses throughout Mauritius, the Indian Ocean islands, and the African continent.',
+  },
+  {
+    q: 'Does MAU AI serve businesses in Africa?',
+    a: 'Yes. Based in Mauritius — Africa\'s technology and business gateway — MAU AI serves businesses across Africa. Our multilingual AI systems (English, French, Creole) are designed for both Anglophone and Francophone African markets.',
+  },
+  {
+    q: 'What AI services are available in Mauritius?',
+    a: 'MAU AI offers AI chatbots, AI receptionists, custom AI automation, AI-enhanced websites, AI marketing systems, and AI voice interfaces — all fully customised for your business in Mauritius or Africa.',
+  },
+  {
+    q: 'Is AI suitable for small businesses in Mauritius?',
+    a: 'Absolutely. MAU AI\'s solutions serve both SMEs and large enterprises. An AI chatbot or receptionist gives small businesses 24/7 customer service at a fraction of the cost of human staff, making AI accessible at every business size.',
+  },
+  {
+    q: 'How do I get started with AI for my business?',
+    a: 'Book a free discovery call with MAU AI. We learn about your business, design a tailored AI solution, build and integrate it, then launch and optimise for results. Contact us at mauai.co/contact.',
+  },
+];
+
 /* ── service card ── */
 function ServiceCard({ Icon, title, desc, i }) {
   const r = useReveal(i * 60);
@@ -102,6 +136,39 @@ function ServiceCard({ Icon, title, desc, i }) {
       <div style={{ width: 32, height: 1.5, background: '#0d0d12', marginBottom: 12, opacity: 0.15 }} />
       <h3 className="font-bold mb-3 text-sm leading-snug" style={{ color: '#0d0d12' }}>{title}</h3>
       <p className="text-sm leading-7" style={{ color: '#6b7280' }}>{desc}</p>
+    </div>
+  );
+}
+
+/* ── africa point card ── */
+function AfricaCard({ title, desc, i }) {
+  const r = useReveal(i * 80);
+  return (
+    <div ref={r} className="glass-card hover-glow rounded-2xl p-7" style={{ border: '1px solid #e8e8ec' }}>
+      <div className="mb-4 rounded-xl flex items-center justify-center"
+        style={{ width: 44, height: 44, background: '#f4f4f8', border: '1px solid #e0e0e8' }}>
+        <MapPin size={18} color="#0d0d12" />
+      </div>
+      <h3 className="font-bold mb-2 text-sm">{title}</h3>
+      <p className="text-sm leading-7" style={{ color: '#6b7280' }}>{desc}</p>
+    </div>
+  );
+}
+
+/* ── faq item ── */
+function FaqItem({ q, a, i }) {
+  const r = useReveal(i * 50);
+  return (
+    <div ref={r} className="glass-card rounded-2xl overflow-hidden" style={{ border: '1px solid #e8e8ec' }}>
+      <details className="group">
+        <summary
+          className="flex items-center justify-between gap-4 px-7 py-5 cursor-pointer list-none font-semibold text-sm"
+          style={{ color: '#0d0d12' }}>
+          <span>{q}</span>
+          <ChevronDown size={16} color="#888" style={{ flexShrink: 0 }} className="transition-transform group-open:rotate-180" />
+        </summary>
+        <p className="px-7 pb-6 text-sm leading-7" style={{ color: '#6b7280' }}>{a}</p>
+      </details>
     </div>
   );
 }
@@ -123,6 +190,13 @@ function WhyCard({ Icon, title, desc, i }) {
 
 /* ── page ── */
 export default function Home() {
+  useSEO({
+    title: 'MAU AI — #1 AI Solutions Company in Mauritius & Africa',
+    description: "MAU AI is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites and AI voice systems for businesses across Mauritius and Africa. Book a free consultation today.",
+    keywords: 'AI Mauritius, AI Africa, artificial intelligence Mauritius, AI company Mauritius, MAU AI, AI chatbot Mauritius, AI automation Africa, AI solutions Africa, best AI company Mauritius, AI startup Mauritius',
+    url: 'https://mauai.co/',
+  });
+
   return (
     <>
       {/* ═══ HERO (ChainGPT-inspired layout) ═══ */}
@@ -215,7 +289,8 @@ export default function Home() {
             Artificial<br />Intelligence
           </h1>
           <p className="mt-5 text-sm leading-7 max-w-sm" style={{ color: '#6b7280' }}>
-            MAU AI helps Mauritian businesses automate operations, improve customer
+            MAU AI is Mauritius's leading AI solutions company — helping businesses
+            across Mauritius and Africa automate operations, improve customer
             experience, and unlock new revenue through custom-built AI systems.
           </p>
           <div className="flex flex-wrap gap-4 mt-7">
@@ -257,16 +332,17 @@ export default function Home() {
             <div ref={r}>
               <span className="tag-pill">Who We Are</span>
               <h2 className="mt-5 font-extrabold tracking-tight" style={{ fontSize: 'clamp(1.8rem,3.4vw,2.6rem)', letterSpacing: '-0.5px', lineHeight: 1.15, color: '#0d0d12' }}>
-                Transforming Mauritian Businesses Through Artificial Intelligence
+                Mauritius's Leading AI Company — Transforming Businesses Across Africa
               </h2>
               <p className="mt-5 text-sm leading-8" style={{ color: '#6b7280' }}>
-                MAU AI is a Mauritian AI solutions company focused on helping businesses automate
-                operations, improve customer experience, increase revenue, and save time through
-                intelligent systems.
+                MAU AI is Mauritius's premier AI solutions company, helping businesses in Mauritius
+                and across Africa automate operations, improve customer experience, increase revenue,
+                and save time through custom-built intelligent systems.
               </p>
               <p className="mt-3 text-sm leading-8" style={{ color: '#6b7280' }}>
                 Our team combines expertise in software engineering, electronics, operations, and
-                business strategy to deliver practical AI solutions that create measurable results.
+                business strategy to deliver practical AI solutions tailored for the Mauritian and
+                African market — with measurable, lasting results.
               </p>
               <p className="mt-8 text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#aaa', letterSpacing: '2px' }}>
                 Leadership Team
@@ -297,8 +373,9 @@ export default function Home() {
               <h3 className="font-bold text-2xl mb-5" style={{ color: '#0d0d12' }}>Our Vision</h3>
               <p className="text-sm leading-8 mb-8" style={{ color: '#6b7280' }}>
                 Our mission is to build an AI ecosystem that enables businesses across Mauritius
-                to operate more efficiently, serve customers better, and unlock new growth
-                opportunities through intelligent technology.
+                and Africa to operate more efficiently, serve customers better, and unlock new
+                growth opportunities through intelligent technology. Mauritius is Africa's tech
+                gateway — and MAU AI is leading the AI revolution from here.
               </p>
               <Link to="/contact"
                 className="btn-primary inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-sm font-bold no-underline">
@@ -357,6 +434,42 @@ export default function Home() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ AI ACROSS AFRICA ═══ */}
+      <section className="relative z-10" style={{ background: '#f2f3f5', padding: '100px 64px' }} aria-label="MAU AI serving Africa">
+        <div className="max-w-6xl mx-auto">
+          <SectionHeader
+            tag="AI in Africa"
+            title="AI Solutions for Mauritius &amp; Africa"
+            desc="Mauritius is Africa's technology gateway. MAU AI delivers intelligent automation to businesses across the continent — with local expertise, multilingual support, and African market understanding."
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-12">
+            {AFRICA_POINTS.map((p, i) => <AfricaCard key={p.title} {...p} i={i} />)}
+          </div>
+          {/* Hidden but indexable geographic entity list */}
+          <p className="sr-only">
+            MAU AI provides AI solutions in Mauritius, Réunion, Madagascar, Seychelles, Comoros,
+            East Africa, Kenya, Tanzania, South Africa, Zimbabwe, Zambia, Mozambique, Botswana,
+            Namibia, Nigeria, Ghana, Senegal, Ivory Coast, Cameroon, and across Francophone Africa
+            and Anglophone Africa. MAU AI is the leading AI company in the Indian Ocean region and
+            one of Africa's top artificial intelligence service providers.
+          </p>
+        </div>
+      </section>
+
+      {/* ═══ FAQ ═══ */}
+      <section className="relative z-10" style={{ background: '#fafafa', padding: '100px 64px' }} itemScope itemType="https://schema.org/FAQPage">
+        <div className="max-w-3xl mx-auto">
+          <SectionHeader
+            tag="FAQ"
+            title="Frequently Asked Questions"
+            desc="Everything you need to know about AI solutions for your business in Mauritius and Africa."
+          />
+          <div className="flex flex-col gap-3">
+            {FAQS.map((f, i) => <FaqItem key={f.q} {...f} i={i} />)}
           </div>
         </div>
       </section>

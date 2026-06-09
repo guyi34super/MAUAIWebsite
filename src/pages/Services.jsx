@@ -5,6 +5,7 @@ import {
   Bot, UserCheck, Settings2, Globe, Megaphone, Mic2,
   CheckCircle2, ArrowRight,
 } from 'lucide-react';
+import useSEO from '../hooks/useSEO';
 
 function useReveal() {
   const ref = useRef(null);
@@ -158,6 +159,13 @@ function SectionHeader({ tag, title, delay = 0 }) {
 }
 
 export default function Services() {
+  useSEO({
+    title: 'AI Services in Mauritius & Africa — MAU AI',
+    description: 'Explore MAU AI\'s full range of AI services: AI chatbots, AI virtual receptionists, custom AI automation, AI website development, AI marketing, and AI voice interfaces for businesses in Mauritius and Africa.',
+    keywords: 'AI chatbot Mauritius, AI receptionist Africa, AI automation Mauritius, custom AI solutions Africa, AI website Mauritius, AI marketing Africa, AI voice Mauritius, MAU AI services',
+    url: 'https://mauai.co/services',
+  });
+
   return (
     <>
       {/* Hero */}
@@ -177,7 +185,7 @@ export default function Services() {
           </h1>
           <div className="section-line" style={{ margin: '18px auto' }} />
           <p className="text-base leading-8" style={{ color: '#6b7280', maxWidth: 540, margin: '0 auto' }}>
-            End-to-end AI solutions custom-built for Mauritian businesses.
+            End-to-end AI solutions custom-built for businesses in Mauritius and across Africa.
             Each service is designed to create measurable, lasting results.
           </p>
         </motion.div>
