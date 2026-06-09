@@ -206,8 +206,9 @@ export default function Robot({ waving = false, interactive = true }) {
         <rect x="110" y="155" width="80" height="14" rx="7"
           fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" />
         {[118, 126, 134, 142, 150, 158, 166, 174, 182].map((x, i) => (
-          <motion.rect key={x} x={x} y="158" width="2.5" height="8" rx="1.2"
+          <motion.rect key={x} x={x} width="2.5" rx="1.2"
             fill="rgba(255,255,255,0.3)"
+            initial={{ height: 4, y: 160 }}
             animate={{ height: [4, 8, 4], y: [160, 158, 160] }}
             transition={{ duration: 0.4 + i * 0.08, repeat: Infinity, delay: i * 0.06 }}
           />

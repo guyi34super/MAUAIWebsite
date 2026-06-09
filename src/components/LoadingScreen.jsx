@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Robot from './Robot';
 
 const MIN_DISPLAY_MS = 2200;
+const MAX_DISPLAY_MS = 4500;
 
 export default function LoadingScreen({ onComplete }) {
   const [progress, setProgress] = useState(0);
@@ -14,12 +15,10 @@ export default function LoadingScreen({ onComplete }) {
 
     const tick = () => {
       const elapsed = Date.now() - start;
-      const loaded = document.readyState === 'complete';
       const timeProgress = Math.min(elapsed / MIN_DISPLAY_MS, 1);
-      const loadProgress = loaded ? 1 : Math.min(elapsed / (MIN_DISPLAY_MS * 1.4), 0.85);
-      setProgress(Math.round(Math.max(timeProgress, loadProgress) * 100));
+      setProgress(Math.round(timeProgress * 100));
 
-      if (!loaded || elapsed < MIN_DISPLAY_MS) {
+      if (elapsed < MIN_DISPLAY_MS) {
         frame = requestAnimationFrame(tick);
       } else {
         setProgress(100);
@@ -28,8 +27,16 @@ export default function LoadingScreen({ onComplete }) {
     };
 
     frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, []);
+    const forceDismiss = setTimeout(() => {
+      setProgress(100);
+      setVisible(false);
+    }, MAX_DISPLAY_MS);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(forceDismiss);
+    };
+  }, [onComplete]);
 
   return (
     <AnimatePresence onExitComplete={onComplete}>

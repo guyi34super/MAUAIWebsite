@@ -30,6 +30,11 @@ function Layout({ children }) {
 export default function App() {
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fallback = setTimeout(() => setLoading(false), 5000);
+    return () => clearTimeout(fallback);
+  }, []);
+
   return (
     <>
       {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
