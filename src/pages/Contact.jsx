@@ -29,6 +29,24 @@ const SERVICES = [
   'Not sure yet — need advice',
 ];
 
+const FIELD_LIMITS = { name: 100, company: 100, message: 2000 };
+
+function sanitizeFormValue(value, maxLength) {
+  return String(value)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    .slice(0, maxLength)
+    .trim();
+}
+
+function validateForm(form) {
+  const name = sanitizeFormValue(form.name, FIELD_LIMITS.name);
+  const company = sanitizeFormValue(form.company, FIELD_LIMITS.company);
+  const message = sanitizeFormValue(form.message, FIELD_LIMITS.message);
+  if (!name || !form.service || !message) return null;
+  if (!SERVICES.includes(form.service)) return null;
+  return { name, company, service: form.service, message };
+}
+
 function buildMailtoUrl(form) {
   const subject = `MAU AI inquiry — ${form.service}`;
   const body = [
@@ -51,7 +69,9 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    window.location.href = buildMailtoUrl(form);
+    const validated = validateForm(form);
+    if (!validated) return;
+    window.location.href = buildMailtoUrl(validated);
     setStatus('success');
     setForm({ name: '', company: '', service: '', message: '' });
   };
