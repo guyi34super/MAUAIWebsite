@@ -1,25 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, MessageSquare, CheckCircle, Send } from 'lucide-react';
-import emailjs from '@emailjs/browser';
 
-const IS_DEV = import.meta.env.DEV;
 const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'team.mau.ai@gmail.com';
-const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
-const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
-const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
-const HAS_EMAILJS = Boolean(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY);
-
-const EMAILJS_TEMPLATE_PARAMS = [
-  'from_name',
-  'from_email',
-  'company',
-  'service',
-  'message',
-  'reply_to',
-  'to_email',
-];
 
 function useReveal() {
   const ref = useRef(null);
@@ -46,103 +29,37 @@ const SERVICES = [
   'Not sure yet — need advice',
 ];
 
-function submitViaFormPost(form) {
-  const hiddenForm = document.createElement('form');
-  hiddenForm.action = `https://formsubmit.co/${CONTACT_EMAIL}`;
-  hiddenForm.method = 'POST';
-  hiddenForm.acceptCharset = 'UTF-8';
-  hiddenForm.style.display = 'none';
+function buildMailtoUrl(form) {
+  const subject = `MAU AI inquiry — ${form.service}`;
+  const body = [
+    `Name: ${form.name}`,
+    `Email: ${form.email}`,
+    `Company: ${form.company || 'Not provided'}`,
+    `Service: ${form.service}`,
+    '',
+    'Message:',
+    form.message,
+  ].join('\n');
 
-  const fields = {
-    name: form.name,
-    email: form.email,
-    company: form.company || 'Not provided',
-    service: form.service,
-    message: form.message,
-    _subject: `MAU AI inquiry — ${form.service}`,
-    _template: 'table',
-    _captcha: 'false',
-    _next: `${window.location.origin}/contact?sent=1`,
-  };
-
-  Object.entries(fields).forEach(([name, value]) => {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = name;
-    input.value = value;
-    hiddenForm.appendChild(input);
+  const params = new URLSearchParams({
+    subject,
+    body,
   });
 
-  document.body.appendChild(hiddenForm);
-  hiddenForm.submit();
+  return `mailto:${CONTACT_EMAIL}?${params.toString()}`;
 }
 
 export default function Contact() {
-  const [searchParams, setSearchParams] = useSearchParams();
   const [form, setForm] = useState({ name: '', email: '', company: '', service: '', message: '' });
   const [status, setStatus] = useState('idle');
-  const [errMsg, setErrMsg] = useState('');
-
-  useEffect(() => {
-    if (searchParams.get('sent') === '1') {
-      setStatus('success');
-      setSearchParams({}, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
-
-  useEffect(() => {
-    if (HAS_EMAILJS) emailjs.init(EMAILJS_PUBLIC_KEY);
-  }, []);
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
-  const buildEmailJsParams = () => ({
-    from_name: form.name,
-    from_email: form.email,
-    company: form.company || 'Not provided',
-    service: form.service,
-    message: form.message,
-    to_email: CONTACT_EMAIL,
-    reply_to: form.email,
-  });
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setStatus('loading');
-    setErrMsg('');
-
-    if (!HAS_EMAILJS) {
-      if (IS_DEV) {
-        setErrMsg(
-          'Contact form is not configured. Add VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, and VITE_EMAILJS_PUBLIC_KEY to .env.local — see README.',
-        );
-        setStatus('error');
-        return;
-      }
-
-      submitViaFormPost(form);
-      return;
-    }
-
-    try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        buildEmailJsParams(),
-        EMAILJS_PUBLIC_KEY,
-      );
-      setStatus('success');
-      setForm({ name: '', email: '', company: '', service: '', message: '' });
-    } catch (err) {
-      console.error('EmailJS error:', err);
-      const detail = err?.text || err?.message;
-      setErrMsg(
-        detail
-          ? `Could not send message (${detail}). Please email us at ${CONTACT_EMAIL}.`
-          : `Something went wrong. Please email us directly at ${CONTACT_EMAIL}.`,
-      );
-      setStatus('error');
-    }
+    window.location.href = buildMailtoUrl(form);
+    setStatus('success');
+    setForm({ name: '', email: '', company: '', service: '', message: '' });
   };
 
   const inputStyle = {
@@ -208,7 +125,7 @@ export default function Contact() {
             </p>
 
             {[
-              { Icon: Mail, label: 'Email', value: 'team.mau.ai@gmail.com', href: 'mailto:team.mau.ai@gmail.com' },
+              { Icon: Mail, label: 'Email', value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
               { Icon: MessageSquare, label: 'WhatsApp', value: 'Message us on WhatsApp', href: '#' },
             ].map(({ Icon, label, value, href }) => (
               <div key={label} className="flex items-start gap-4 mb-7">
@@ -258,34 +175,17 @@ export default function Contact() {
                   style={{ width: 84, height: 84, background: '#f0f0f4', border: '2px solid #0d0d12' }}>
                   <CheckCircle size={38} color="#0d0d12" />
                 </div>
-                <h3 className="font-bold text-2xl mb-3" style={{ color: '#0d0d12' }}>Message Sent!</h3>
-                <p className="text-sm leading-8" style={{ color: '#6b7280', maxWidth: 320 }}>
-                  Thanks for reaching out. The MAU AI team will get back to you within 24 hours.
+                <h3 className="font-bold text-2xl mb-3" style={{ color: '#0d0d12' }}>Email Ready!</h3>
+                <p className="text-sm leading-8" style={{ color: '#6b7280', maxWidth: 360 }}>
+                  Your email app should have opened with a message to {CONTACT_EMAIL}.
+                  Please click Send in your email app to deliver your inquiry.
                 </p>
               </motion.div>
             ) : (
               <>
                 <h3 className="font-bold text-xl mb-7" style={{ color: '#0d0d12' }}>Send Us a Message</h3>
 
-                {IS_DEV && !HAS_EMAILJS && (
-                  <p className="text-sm mb-5 rounded-lg p-4"
-                    style={{ color: '#92400e', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)' }}>
-                    Dev mode: EmailJS is not configured. Copy <code>.env.example</code> to <code>.env.local</code> and add your keys.
-                    Required template variables: {EMAILJS_TEMPLATE_PARAMS.join(', ')}.
-                  </p>
-                )}
-
-                {!IS_DEV && !HAS_EMAILJS && (
-                  <p className="text-sm mb-5 rounded-lg p-4"
-                    style={{ color: '#6b7280', background: '#f9fafb', border: '1px solid #e5e7eb' }}>
-                    Submitting will briefly redirect you to complete delivery. First-time senders must activate the form via the email sent to {CONTACT_EMAIL}.
-                  </p>
-                )}
-
                 <form onSubmit={handleSubmit} noValidate>
-                  <input type="text" name="_honey" tabIndex={-1} autoComplete="off"
-                    style={{ display: 'none' }} aria-hidden="true" />
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                     <div>
                       <label style={labelStyle}>Full Name *</label>
@@ -336,35 +236,16 @@ export default function Contact() {
                     />
                   </div>
 
-                  {status === 'error' && (
-                    <p className="text-sm mb-5 rounded-lg p-4"
-                      style={{ color: '#dc2626', background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.2)' }}>
-                      {errMsg}
-                    </p>
-                  )}
-
                   <button
                     type="submit"
-                    disabled={status === 'loading'}
-                    className="w-full btn-primary rounded-xl py-4 font-bold text-sm tracking-widest uppercase flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full btn-primary rounded-xl py-4 font-bold text-sm tracking-widest uppercase flex items-center justify-center gap-3"
                     style={{ letterSpacing: '1.5px' }}
                   >
-                    {status === 'loading' ? (
-                      <>
-                        <motion.span
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                          style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block' }}
-                        />
-                        Sending...
-                      </>
-                    ) : (
-                      <> Send Message <Send size={16} /> </>
-                    )}
+                    Send Message <Send size={16} />
                   </button>
 
                   <p className="text-xs text-center mt-4" style={{ color: '#9ca3af' }}>
-                    Sends directly to team.mau.ai@gmail.com · We reply within 24 hours
+                    Opens your email app with a message to {CONTACT_EMAIL}
                   </p>
                 </form>
               </>

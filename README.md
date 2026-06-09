@@ -21,66 +21,17 @@ npm run build    # output → dist/
 npm run preview  # preview production build
 ```
 
-## Contact form email setup (EmailJS)
+## Contact form
 
-The contact form sends client inquiries to `team.mau.ai@gmail.com` via [EmailJS](https://www.emailjs.com). Each email includes the client's details and sets **Reply-To** to their address so you can reply directly from Gmail.
+The contact form on `/contact` opens the visitor's email app with a pre-filled message to `team.mau.ai@gmail.com`. The visitor reviews the draft and clicks Send in their mail app to deliver the inquiry.
 
-### 1. Create an EmailJS account
+No API keys or third-party services are required.
 
-1. Sign up at [https://www.emailjs.com](https://www.emailjs.com) (free tier: 200 emails/month)
-2. **Email Services** → Add Gmail → connect `team.mau.ai@gmail.com`
-
-### 2. Create an email template
-
-Create a template with these variables (must match the code):
-
-| Variable | Description |
-| --- | --- |
-| `{{from_name}}` | Client's full name |
-| `{{from_email}}` | Client's email |
-| `{{company}}` | Company name |
-| `{{service}}` | Service selected |
-| `{{message}}` | Message body |
-| `{{reply_to}}` | Client's email (set as Reply-To) |
-| `{{to_email}}` | Inbox address |
-
-**Suggested subject:** `New MAU AI inquiry from {{from_name}}`
-
-**Important:** In the template settings, set **Reply-To** to `{{reply_to}}` so Gmail's Reply button addresses the client.
-
-### 3. Local environment variables
-
-Copy the example file and add your keys:
-
-```bash
-cp .env.example .env.local
-```
-
-Edit `.env.local`:
+Optionally override the recipient in `.env.local`:
 
 ```
-VITE_EMAILJS_SERVICE_ID=service_xxxxxxx
-VITE_EMAILJS_TEMPLATE_ID=template_xxxxxxx
-VITE_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxx
+VITE_CONTACT_EMAIL=team.mau.ai@gmail.com
 ```
-
-Restart the dev server after changing env vars.
-
-### 4. Vercel environment variables
-
-In Vercel → Project → **Settings** → **Environment Variables**, add:
-
-| Variable | Value |
-| --- | --- |
-| `VITE_EMAILJS_SERVICE_ID` | Your EmailJS service ID |
-| `VITE_EMAILJS_TEMPLATE_ID` | Your EmailJS template ID |
-| `VITE_EMAILJS_PUBLIC_KEY` | Your EmailJS public key |
-
-**Redeploy after adding variables** — Vite bakes env vars in at build time.
-
-### Fallback (FormSubmit)
-
-If EmailJS env vars are not set in production, the form falls back to [FormSubmit](https://formsubmit.co). This requires a one-time activation: submit the form once, then click the activation link sent to `team.mau.ai@gmail.com`.
 
 ## Deploy on Vercel
 
