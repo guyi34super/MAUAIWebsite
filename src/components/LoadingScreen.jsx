@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Robot from './Robot';
 
@@ -7,6 +7,8 @@ const MIN_DISPLAY_MS = 1800;
 export default function LoadingScreen({ onComplete }) {
   const [progress, setProgress] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
     const start = Date.now();
@@ -27,14 +29,14 @@ export default function LoadingScreen({ onComplete }) {
     frame = requestAnimationFrame(tick);
 
     const done = setTimeout(() => {
-      onComplete();
+      onCompleteRef.current();
     }, MIN_DISPLAY_MS + 700);
 
     return () => {
       cancelAnimationFrame(frame);
       clearTimeout(done);
     };
-  }, [onComplete]);
+  }, []);
 
   return (
     <motion.div

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -29,15 +29,16 @@ function Layout({ children }) {
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const handleLoadComplete = useCallback(() => setLoading(false), []);
 
   useEffect(() => {
-    const fallback = setTimeout(() => setLoading(false), 3000);
+    const fallback = setTimeout(handleLoadComplete, 3000);
     return () => clearTimeout(fallback);
-  }, []);
+  }, [handleLoadComplete]);
 
   return (
     <>
-      {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
+      {loading && <LoadingScreen onComplete={handleLoadComplete} />}
       <BrowserRouter>
         <ScrollToTop />
         <Layout>
