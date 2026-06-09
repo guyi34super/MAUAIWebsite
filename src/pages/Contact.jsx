@@ -33,7 +33,6 @@ function buildMailtoUrl(form) {
   const subject = `MAU AI inquiry — ${form.service}`;
   const body = [
     `Name: ${form.name}`,
-    `Email: ${form.email}`,
     `Company: ${form.company || 'Not provided'}`,
     `Service: ${form.service}`,
     '',
@@ -45,7 +44,7 @@ function buildMailtoUrl(form) {
 }
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', company: '', service: '', message: '' });
+  const [form, setForm] = useState({ name: '', company: '', service: '', message: '' });
   const [status, setStatus] = useState('idle');
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
@@ -54,7 +53,7 @@ export default function Contact() {
     e.preventDefault();
     window.location.href = buildMailtoUrl(form);
     setStatus('success');
-    setForm({ name: '', email: '', company: '', service: '', message: '' });
+    setForm({ name: '', company: '', service: '', message: '' });
   };
 
   const inputStyle = {
@@ -181,23 +180,13 @@ export default function Contact() {
                 <h3 className="font-bold text-xl mb-7" style={{ color: '#0d0d12' }}>Send Us a Message</h3>
 
                 <form onSubmit={handleSubmit} noValidate>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
-                    <div>
-                      <label style={labelStyle}>Full Name *</label>
-                      <input required placeholder="Your name" value={form.name} onChange={set('name')}
-                        style={inputStyle}
-                        onFocus={e => { e.target.style.borderColor = '#0d0d12'; e.target.style.boxShadow = '0 0 0 3px rgba(13,13,18,0.08)'; }}
-                        onBlur={e => { e.target.style.borderColor = '#e0e0e8'; e.target.style.boxShadow = 'none'; }}
-                      />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>Email Address *</label>
-                      <input required type="email" placeholder="you@company.com" value={form.email} onChange={set('email')}
-                        style={inputStyle}
-                        onFocus={e => { e.target.style.borderColor = '#0d0d12'; e.target.style.boxShadow = '0 0 0 3px rgba(13,13,18,0.08)'; }}
-                        onBlur={e => { e.target.style.borderColor = '#e0e0e8'; e.target.style.boxShadow = 'none'; }}
-                      />
-                    </div>
+                  <div className="mb-5">
+                    <label style={labelStyle}>Full Name *</label>
+                    <input required placeholder="Your name" value={form.name} onChange={set('name')}
+                      style={inputStyle}
+                      onFocus={e => { e.target.style.borderColor = '#0d0d12'; e.target.style.boxShadow = '0 0 0 3px rgba(13,13,18,0.08)'; }}
+                      onBlur={e => { e.target.style.borderColor = '#e0e0e8'; e.target.style.boxShadow = 'none'; }}
+                    />
                   </div>
 
                   <div className="mb-5">
