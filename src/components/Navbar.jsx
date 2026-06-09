@@ -3,22 +3,42 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-function Logo({ size = 'md' }) {
-  const s = size === 'sm' ? 32 : 38;
+function Logo({ size = 'md', variant = 'light' }) {
+  const isDark = variant === 'dark';
+  const mainSize = size === 'sm' ? '1.1rem' : '1.25rem';
+  const aiSize = size === 'sm' ? '0.7rem' : '0.8rem';
+  const taglineSize = isDark ? '0.42rem' : '0.44rem';
+  const logoHeight = size === 'sm' ? 32 : 38;
+
   return (
     <Link to="/" className="flex items-center gap-3 no-underline">
-      <svg width={s} height={s} viewBox="0 0 42 42" fill="none">
-        <rect x="1" y="1" width="40" height="40" rx="9" fill="#0d0d12" />
-        <path d="M9 31 L9 13 L21 25 L33 13 L33 31"
-          fill="none" stroke="white" strokeWidth="2.6"
-          strokeLinejoin="round" strokeLinecap="round" />
-        <path d="M15 36 L21 30 L27 36 Z" fill="#ff4757" />
-      </svg>
+      <img
+        src="/logo-mu.png"
+        alt="MAU AI"
+        style={{ height: logoHeight, width: 'auto', objectFit: 'contain', flexShrink: 0 }}
+      />
       <div className="flex flex-col">
-        <span style={{ fontWeight: 800, letterSpacing: '3px', fontSize: size === 'sm' ? '1.1rem' : '1.25rem', color: '#0d0d12', lineHeight: 1 }}>
-          MAU<span style={{ fontSize: size === 'sm' ? '0.7rem' : '0.8rem', fontWeight: 400, color: '#888', letterSpacing: '1px', verticalAlign: 'super' }}>ai</span>
+        <span style={{
+          fontWeight: 800,
+          letterSpacing: '3px',
+          fontSize: mainSize,
+          color: isDark ? 'white' : '#0d0d12',
+          lineHeight: 1,
+        }}>
+          MAU<span style={{
+            fontSize: aiSize,
+            fontWeight: 400,
+            color: isDark ? 'rgba(255,255,255,0.5)' : '#888',
+            letterSpacing: '1px',
+            verticalAlign: 'super',
+          }}>ai</span>
         </span>
-        <span style={{ fontSize: '0.44rem', letterSpacing: '3.5px', color: '#aaa', marginTop: 2 }}>INTELLIGENCE THAT WORKS</span>
+        <span style={{
+          fontSize: taglineSize,
+          letterSpacing: isDark ? '3px' : '3.5px',
+          color: isDark ? 'rgba(255,255,255,0.35)' : '#aaa',
+          marginTop: 2,
+        }}>INTELLIGENCE THAT WORKS</span>
       </div>
     </Link>
   );

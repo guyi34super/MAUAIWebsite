@@ -1,0 +1,26 @@
+{
+  "name": "MAU AI — AI Solutions Mauritius & Africa",
+  "short_name": "MAU AI",
+  "description": "Mauritius's leading AI solutions company. AI chatbots, receptionists, automation, websites and voice AI for businesses in Mauritius and Africa.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#0d0d12",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "keywords": ["AI", "Mauritius", "Africa", "chatbot", "automation", "artificial intelligence"]
+}
