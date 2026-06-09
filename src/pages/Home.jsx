@@ -167,8 +167,8 @@ export default function Home() {
             </p>
           </FloatPanel>
 
-          {/* LEFT panels — visible on lg screens */}
-          <div className="absolute left-6 xl:left-10 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 z-20" style={{ maxWidth: 230 }}>
+          {/* RIGHT panels — visible on lg screens */}
+          <div className="absolute right-6 xl:right-10 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 z-20" style={{ maxWidth: 230 }}>
             <FloatPanel delay={0.7} style={{ position: 'relative' }}>
               <div className="flex items-center gap-2 mb-2">
                 <div style={{ width: 20, height: 20, borderRadius: 4, background: '#f4f4f8', border: '1px solid #e0e0e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -200,8 +200,8 @@ export default function Home() {
             <Robot />
           </motion.div>
 
-          {/* RIGHT floating panels */}
-          <div className="absolute right-6 xl:right-10 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-3 z-20" style={{ maxWidth: 200 }}>
+          {/* LEFT floating panels */}
+          <div className="absolute left-6 xl:left-10 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-3 z-20" style={{ maxWidth: 200 }}>
             <FloatPanel delay={0.8} style={{ position: 'relative' }}>
               <div className="flex items-center gap-2 mb-1">
                 <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#0be881' }} />
