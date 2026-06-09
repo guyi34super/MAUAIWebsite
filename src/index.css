@@ -156,3 +156,82 @@ body::before {
 }
 .ticker-track { animation: ticker 28s linear infinite; }
 .ticker-track:hover { animation-play-state: paused; }
+
+/* Loading screen */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  overflow: hidden;
+}
+
+.loading-screen__glow {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(30, 144, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.loading-screen__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-screen__text {
+  text-align: center;
+  margin-top: -12px;
+}
+
+.loading-screen__brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: #0d0d12;
+}
+
+.loading-screen__tagline {
+  margin-top: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.loading-screen__progress {
+  width: 220px;
+  margin-top: 28px;
+}
+
+.loading-screen__progress-track {
+  height: 3px;
+  border-radius: 100px;
+  background: #e8e8ec;
+  overflow: hidden;
+}
+
+.loading-screen__progress-bar {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, #1e90ff, #7158e2);
+}
+
+.loading-screen__status {
+  margin-top: 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  color: #aaa;
+}
