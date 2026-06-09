@@ -33,7 +33,6 @@ const SERVICES = [
       'Seamless handoff to human agents',
       'Analytics and conversation insights',
     ],
-    color: '#00d4ff',
   },
   {
     Icon: UserCheck,
@@ -46,7 +45,6 @@ const SERVICES = [
       'Customer data capture and CRM sync',
       'High-value lead escalation alerts',
     ],
-    color: '#00ff88',
   },
   {
     Icon: Settings2,
@@ -59,7 +57,6 @@ const SERVICES = [
       'API integrations and custom pipelines',
       'AI-powered dashboards and reporting',
     ],
-    color: '#7b2fff',
   },
   {
     Icon: Globe,
@@ -72,7 +69,6 @@ const SERVICES = [
       'Automated follow-up sequences',
       'Performance analytics and A/B testing',
     ],
-    color: '#00d4ff',
   },
   {
     Icon: Megaphone,
@@ -85,7 +81,6 @@ const SERVICES = [
       'Lead scoring and nurturing sequences',
       'ROI tracking and optimisation',
     ],
-    color: '#00ff88',
   },
   {
     Icon: Mic2,
@@ -98,7 +93,6 @@ const SERVICES = [
       'Multi-language voice support',
       'Voice analytics and reporting',
     ],
-    color: '#7b2fff',
   },
 ];
 
@@ -109,21 +103,20 @@ const PROCESS = [
   { step: '04', title: 'Launch & Optimise', desc: 'We launch, monitor, and continuously optimise for performance and business outcomes.' },
 ];
 
-function ServiceCard({ Icon, title, desc, features, color, delay = 0 }) {
+function ServiceCard({ Icon, title, desc, features, delay = 0 }) {
   const ref = useReveal();
   return (
-    <div ref={ref} className="glass-card hover-glow rounded-2xl p-9 relative overflow-hidden flex flex-col" style={{ transitionDelay: `${delay}ms` }}>
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${color}55, transparent)`, opacity: 0, transition: 'opacity .3s' }} className="card-line" />
+    <div ref={ref} className="glass-card hover-glow rounded-2xl p-9 flex flex-col" style={{ transitionDelay: `${delay}ms` }}>
       <div className="mb-6 rounded-2xl flex items-center justify-center"
-        style={{ width: 68, height: 68, background: `${color}12`, border: `1px solid ${color}22` }}>
-        <Icon size={28} color={color} />
+        style={{ width: 68, height: 68, background: '#f0f0f4', border: '1px solid #e0e0e8' }}>
+        <Icon size={28} color="#0d0d12" />
       </div>
-      <h3 className="font-bold text-xl mb-4 leading-snug">{title}</h3>
-      <p className="text-sm leading-7 mb-6" style={{ color: 'rgba(255,255,255,0.54)' }}>{desc}</p>
+      <h3 className="font-bold text-xl mb-4 leading-snug" style={{ color: '#0d0d12' }}>{title}</h3>
+      <p className="text-sm leading-7 mb-6" style={{ color: '#6b7280' }}>{desc}</p>
       <ul className="flex flex-col gap-3 mt-auto">
         {features.map(f => (
-          <li key={f} className="flex items-start gap-3 text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
-            <CheckCircle2 size={15} color={color} style={{ flexShrink: 0, marginTop: 1 }} />
+          <li key={f} className="flex items-start gap-3 text-sm" style={{ color: '#4b5563' }}>
+            <CheckCircle2 size={15} color="#0d0d12" style={{ flexShrink: 0, marginTop: 1 }} />
             {f}
           </li>
         ))}
@@ -132,28 +125,58 @@ function ServiceCard({ Icon, title, desc, features, color, delay = 0 }) {
   );
 }
 
+function ProcessStep({ step, title, desc, last, delay = 0 }) {
+  const ref = useReveal();
+  return (
+    <div ref={ref} className="glass-card rounded-2xl p-7 relative hover-glow" style={{ transitionDelay: `${delay}ms` }}>
+      <span className="font-extrabold text-4xl block mb-5" style={{ lineHeight: 1, color: '#0d0d12' }}>{step}</span>
+      <h3 className="font-bold text-base mb-3" style={{ color: '#0d0d12' }}>{title}</h3>
+      <p className="text-sm leading-7" style={{ color: '#6b7280' }}>{desc}</p>
+      {!last && (
+        <div className="absolute top-9 right-0 translate-x-1/2 hidden lg:block z-10">
+          <ArrowRight size={16} color="#9ca3af" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SectionHeader({ tag, title, delay = 0 }) {
+  const ref = useReveal();
+  return (
+    <div ref={ref} className="text-center mb-16" style={{ transitionDelay: `${delay}ms` }}>
+      <span className="tag-pill inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase mb-5">
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0d0d12', display: 'inline-block' }} />
+        {tag}
+      </span>
+      <h2 className="font-extrabold tracking-tight" style={{ fontSize: 'clamp(1.9rem,3.8vw,2.9rem)', letterSpacing: '-0.5px', color: '#0d0d12' }}>
+        {title}
+      </h2>
+      <div className="section-line" style={{ margin: '14px auto 0' }} />
+    </div>
+  );
+}
+
 export default function Services() {
   return (
     <>
-      {/* Page Hero */}
-      <section className="relative z-10 text-center overflow-hidden" style={{ padding: '160px 64px 80px', background: '#050508' }}>
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 600px 300px at 50% 40%, rgba(0,212,255,0.07) 0%, transparent 70%)' }} />
+      {/* Hero */}
+      <section className="relative z-10 text-center overflow-hidden" style={{ padding: '160px 64px 80px', background: '#fafafa' }}>
         <motion.div
           className="relative max-w-3xl mx-auto"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="inline-flex items-center gap-2 rounded-full text-xs font-semibold tracking-widest uppercase mb-5"
-            style={{ background: 'rgba(0,212,255,0.09)', border: '1px solid rgba(0,212,255,0.28)', color: '#00d4ff', padding: '6px 16px' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00d4ff' }} />
+          <span className="tag-pill inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase mb-5">
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0d0d12', display: 'inline-block' }} />
             What We Build
           </span>
-          <h1 className="font-extrabold tracking-tight" style={{ fontSize: 'clamp(2.4rem,5vw,4rem)', letterSpacing: '-1.5px', lineHeight: 1.08 }}>
-            AI Services That Drive<br /><span className="gradient-text">Real Business Results</span>
+          <h1 className="font-extrabold tracking-tight" style={{ fontSize: 'clamp(2.4rem,5vw,4rem)', letterSpacing: '-1.5px', lineHeight: 1.08, color: '#0d0d12' }}>
+            AI Services That Drive<br />Real Business Results
           </h1>
-          <div style={{ width: 54, height: 2, background: 'linear-gradient(90deg,#00d4ff,#00ff88)', margin: '18px auto' }} />
-          <p className="text-base leading-8" style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 540, margin: '0 auto' }}>
+          <div className="section-line" style={{ margin: '18px auto' }} />
+          <p className="text-base leading-8" style={{ color: '#6b7280', maxWidth: 540, margin: '0 auto' }}>
             End-to-end AI solutions custom-built for Mauritian businesses.
             Each service is designed to create measurable, lasting results.
           </p>
@@ -161,68 +184,46 @@ export default function Services() {
       </section>
 
       {/* Services Grid */}
-      <section className="relative z-10" style={{ background: '#08080f', padding: '72px 64px 100px' }}>
+      <section className="relative z-10" style={{ background: '#f2f3f5', padding: '72px 64px 100px' }}>
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
           {SERVICES.map((s, i) => <ServiceCard key={s.title} {...s} delay={i * 70} />)}
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="relative z-10" style={{ background: '#050508', padding: '100px 64px' }}>
+      <section className="relative z-10" style={{ background: '#fafafa', padding: '100px 64px' }}>
         <div className="max-w-5xl mx-auto">
-          {(() => { const r = useReveal(); return (
-            <div ref={r} className="text-center mb-16">
-              <span className="inline-flex items-center gap-2 rounded-full text-xs font-semibold tracking-widest uppercase mb-4"
-                style={{ background: 'rgba(0,212,255,0.09)', border: '1px solid rgba(0,212,255,0.28)', color: '#00d4ff', padding: '6px 16px' }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00d4ff' }} />
-                Our Process
-              </span>
-              <h2 className="font-extrabold tracking-tight" style={{ fontSize: 'clamp(1.9rem,3.8vw,2.9rem)', letterSpacing: '-0.5px' }}>
-                How We Work
-              </h2>
-              <div style={{ width: 54, height: 2, background: 'linear-gradient(90deg,#00d4ff,#00ff88)', margin: '14px auto 0' }} />
-            </div>
-          ); })()}
-
+          <SectionHeader tag="Our Process" title="How We Work" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {PROCESS.map(({ step, title, desc }, i) => {
-              const r = useReveal();
-              return (
-                <div key={step} ref={r} className="glass-card rounded-2xl p-7 relative hover-glow" style={{ transitionDelay: `${i * 80}ms` }}>
-                  <span className="font-extrabold text-4xl gradient-text block mb-5" style={{ lineHeight: 1 }}>{step}</span>
-                  <h3 className="font-bold text-base mb-3">{title}</h3>
-                  <p className="text-sm leading-7" style={{ color: 'rgba(255,255,255,0.52)' }}>{desc}</p>
-                  {i < PROCESS.length - 1 && (
-                    <div className="absolute top-9 right-0 translate-x-1/2 hidden lg:block z-10">
-                      <ArrowRight size={16} color="rgba(0,212,255,0.35)" />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {PROCESS.map(({ step, title, desc }, i) => (
+              <ProcessStep key={step} step={step} title={title} desc={desc} last={i === PROCESS.length - 1} delay={i * 80} />
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="relative z-10 text-center overflow-hidden" style={{ background: '#08080f', padding: '100px 64px' }}>
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 600px 280px at 50% 50%, rgba(0,212,255,0.07) 0%, transparent 70%)' }} />
-        {(() => { const r = useReveal(); return (
-          <div ref={r} className="relative max-w-2xl mx-auto">
-            <h2 className="font-extrabold tracking-tight" style={{ fontSize: 'clamp(2rem,4vw,3.2rem)', letterSpacing: '-1px', lineHeight: 1.1 }}>
-              Ready to Get Started?
-            </h2>
-            <p className="mt-5 text-base leading-8" style={{ color: 'rgba(255,255,255,0.54)' }}>
-              Book a free consultation and discover which AI solutions can make
-              the biggest impact on your business.
-            </p>
-            <div className="mt-10">
-              <Link to="/contact" className="btn-gradient inline-flex items-center gap-2 rounded-lg px-10 py-4 font-bold text-sm no-underline">
-                Book Free Consultation <ArrowRight size={16} />
-              </Link>
+      <section className="relative z-10 text-center overflow-hidden" style={{ background: '#0d0d12', padding: '100px 64px' }}>
+        {(() => {
+          const ref = useReveal();
+          return (
+            <div ref={ref} className="relative max-w-2xl mx-auto">
+              <h2 className="font-extrabold tracking-tight" style={{ fontSize: 'clamp(2rem,4vw,3.2rem)', letterSpacing: '-1px', lineHeight: 1.1, color: '#fff' }}>
+                Ready to Get Started?
+              </h2>
+              <p className="mt-5 text-base leading-8" style={{ color: 'rgba(255,255,255,0.54)' }}>
+                Book a free consultation and discover which AI solutions can make
+                the biggest impact on your business.
+              </p>
+              <div className="mt-10">
+                <Link to="/contact" className="inline-flex items-center gap-2 rounded-lg px-10 py-4 font-bold text-sm no-underline"
+                  style={{ background: '#fff', color: '#0d0d12', letterSpacing: '0.5px' }}>
+                  Book Free Consultation <ArrowRight size={16} />
+                </Link>
+              </div>
             </div>
-          </div>
-        ); })()}
+          );
+        })()}
       </section>
     </>
   );

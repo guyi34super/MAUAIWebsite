@@ -16,36 +16,33 @@ export default function ParticleCanvas() {
     resize();
     window.addEventListener('resize', resize);
 
-    const COUNT = window.innerWidth < 768 ? 50 : 88;
-    const MAX_DIST = 130;
+    const COUNT = window.innerWidth < 768 ? 40 : 70;
+    const MAX_DIST = 120;
 
     const particles = Array.from({ length: COUNT }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      r: Math.random() * 1.6 + 0.4,
-      a: Math.random() * 0.5 + 0.12,
+      vx: (Math.random() - 0.5) * 0.38,
+      vy: (Math.random() - 0.5) * 0.38,
+      r: Math.random() * 1.4 + 0.4,
+      a: Math.random() * 0.3 + 0.08,
     }));
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
         if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
         ctx.save();
         ctx.globalAlpha = p.a;
-        ctx.fillStyle = '#00d4ff';
+        ctx.fillStyle = '#333333';
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
       }
-
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
@@ -53,8 +50,8 @@ export default function ParticleCanvas() {
           const d = Math.sqrt(dx * dx + dy * dy);
           if (d < MAX_DIST) {
             ctx.save();
-            ctx.globalAlpha = (1 - d / MAX_DIST) * 0.25;
-            ctx.strokeStyle = '#00d4ff';
+            ctx.globalAlpha = (1 - d / MAX_DIST) * 0.12;
+            ctx.strokeStyle = '#333333';
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
@@ -64,15 +61,11 @@ export default function ParticleCanvas() {
           }
         }
       }
-
       raf = requestAnimationFrame(draw);
     };
 
     draw();
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', resize);
-    };
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
   }, []);
 
   return <canvas ref={canvasRef} id="particle-canvas" />;
