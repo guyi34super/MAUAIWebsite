@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ParticleCanvas from './components/ParticleCanvas';
+import LoadingScreen from './components/LoadingScreen';
 import Home from './pages/Home';
 import Services from './pages/Services';
 import Contact from './pages/Contact';
@@ -26,16 +28,21 @@ function Layout({ children }) {
 }
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
+
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </Layout>
-    </BrowserRouter>
+    <>
+      {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
+      <BrowserRouter>
+        <ScrollToTop />
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </>
   );
 }

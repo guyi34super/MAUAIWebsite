@@ -1,14 +1,14 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
-export default function Robot() {
+export default function Robot({ waving = false, interactive = true }) {
   const containerRef = useRef(null);
   const [eye, setEye] = useState({ x: 0, y: 0 });
   const [clicked, setClicked] = useState(false);
   const [blink, setBlink] = useState(false);
 
   const handleMouseMove = useCallback((e) => {
-    if (!containerRef.current) return;
+    if (!interactive || !containerRef.current) return;
     const r = containerRef.current.getBoundingClientRect();
     const cx = r.left + r.width / 2;
     const cy = r.top + r.height / 2;
@@ -21,8 +21,8 @@ export default function Robot() {
   }, []);
 
   useEffect(() => {
+    if (!interactive) return;
     window.addEventListener('mousemove', handleMouseMove);
-    // Periodic blink
     const blinker = setInterval(() => {
       setBlink(true);
       setTimeout(() => setBlink(false), 160);
@@ -31,7 +31,16 @@ export default function Robot() {
       window.removeEventListener('mousemove', handleMouseMove);
       clearInterval(blinker);
     };
-  }, [handleMouseMove]);
+  }, [handleMouseMove, interactive]);
+
+  useEffect(() => {
+    if (!waving) return;
+    const blinker = setInterval(() => {
+      setBlink(true);
+      setTimeout(() => setBlink(false), 160);
+    }, 2800);
+    return () => clearInterval(blinker);
+  }, [waving]);
 
   return (
     <div
@@ -60,8 +69,8 @@ export default function Robot() {
         style={{ position: 'relative', zIndex: 2, cursor: 'pointer', filter: 'drop-shadow(0 18px 40px rgba(0,0,0,0.14))' }}
         animate={{ y: [0, -14, 0] }}
         transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-        onClick={() => { setClicked(true); setTimeout(() => setClicked(false), 380); }}
-        whileHover={{ filter: 'drop-shadow(0 22px 55px rgba(0,0,0,0.22))' }}
+        onClick={interactive ? () => { setClicked(true); setTimeout(() => setClicked(false), 380); } : undefined}
+        whileHover={interactive ? { filter: 'drop-shadow(0 22px 55px rgba(0,0,0,0.22))' } : undefined}
       >
         <defs>
           {/* Rainbow gradient for head top strip */}
@@ -255,18 +264,23 @@ export default function Robot() {
           fill="url(#hlGrad)" />
 
         {/* ─── RIGHT ARM ─── */}
-        {/* Shoulder joint */}
         <circle cx="248" cy="224" r="18" fill="url(#armGrad)" />
         <circle cx="248" cy="224" r="11" fill="#c8c8c8" />
         <circle cx="248" cy="224" r="6" fill="#aaa" />
-        {/* Upper arm */}
-        <rect x="244" y="224" width="36" height="70" rx="18"
-          fill="url(#armGrad)" />
-        {/* Lower arm / hand */}
-        <rect x="242" y="290" width="40" height="46" rx="20"
-          fill="url(#armGrad)" />
-        <rect x="244" y="292" width="36" height="20" rx="16"
-          fill="url(#hlGrad)" />
+        <motion.g
+          animate={waving ? { rotate: [-10, -58, -28, -58, -10] } : { rotate: 0 }}
+          transition={waving
+            ? { duration: 1.4, repeat: Infinity, ease: 'easeInOut' }
+            : { duration: 0.3 }}
+          style={{ transformOrigin: '248px 224px', transformBox: 'fill-box' }}
+        >
+          <rect x="244" y="224" width="36" height="70" rx="18"
+            fill="url(#armGrad)" />
+          <rect x="242" y="290" width="40" height="46" rx="20"
+            fill="url(#armGrad)" />
+          <rect x="244" y="292" width="36" height="20" rx="16"
+            fill="url(#hlGrad)" />
+        </motion.g>
 
         {/* ─── WAIST CONNECTOR ─── */}
         <rect x="88" y="312" width="124" height="18" rx="8"
