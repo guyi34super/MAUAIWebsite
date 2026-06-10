@@ -1,6 +1,6 @@
 # MAU AI Website
 
-Marketing site for [MAU AI](https://mauai.co) — Mauritius's AI solutions company. Built with React, Vite, Tailwind CSS, Framer Motion, and React Router.
+Marketing site for [MAU AI](https://mau-ai.com) — Mauritius's AI solutions company. Built with React, Vite, Tailwind CSS, Framer Motion, and React Router.
 
 ## Features
 

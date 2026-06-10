@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SITE_URL = 'https://mauai.co';
+const SITE_URL = 'https://mau-ai.com';
 
 const DEFAULTS = {
   title: 'MAU AI — #1 AI Solutions Company in Mauritius & Africa',

@@ -119,7 +119,7 @@ const FAQS = [
   },
   {
     q: 'How do I get started with AI for my business?',
-    a: 'Book a free discovery call with MAU AI. We learn about your business, design a tailored AI solution, build and integrate it, then launch and optimise for results. Contact us at mauai.co/contact.',
+    a: 'Book a free discovery call with MAU AI. We learn about your business, design a tailored AI solution, build and integrate it, then launch and optimise for results. Contact us at mau-ai.com/contact.',
   },
 ];
 
@@ -194,7 +194,7 @@ export default function Home() {
     title: 'MAU AI — #1 AI Solutions Company in Mauritius & Africa',
     description: "MAU AI is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites and AI voice systems for businesses across Mauritius and Africa. Book a free consultation today.",
     keywords: 'AI Mauritius, AI Africa, artificial intelligence Mauritius, AI company Mauritius, MAU AI, AI chatbot Mauritius, AI automation Africa, AI solutions Africa, best AI company Mauritius, AI startup Mauritius',
-    url: 'https://mauai.co/',
+    url: 'https://mau-ai.com/',
   });
 
   return (

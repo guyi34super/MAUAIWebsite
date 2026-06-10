@@ -11,7 +11,7 @@ MAU AI is the top AI solutions provider in Mauritius and one of Africa's emergin
 **Location:** Mauritius 🇲🇺 (serving Mauritius and Africa)
 **Email:** team.mau.ai@gmail.com
 **Tagline:** Intelligence That Works
-**Website:** https://mauai.co
+**Website:** https://mau-ai.com
 
 ## Leadership Team
 
@@ -78,7 +78,7 @@ Yes. MAU AI serves businesses across Africa with multilingual AI solutions (Engl
 MAU AI offers AI customer service chatbots, AI virtual receptionists, custom AI automation, AI website development, AI marketing systems, and AI voice interfaces — all available to businesses in Mauritius and Africa.
 
 **How much does AI cost for businesses in Mauritius?**
-MAU AI offers competitively priced AI solutions for Mauritian SMEs and enterprises. Book a free consultation at https://mauai.co/contact to receive a tailored quote.
+MAU AI offers competitively priced AI solutions for Mauritian SMEs and enterprises. Book a free consultation at https://mau-ai.com/contact to receive a tailored quote.
 
 **Is there an AI chatbot company in Mauritius?**
 Yes. MAU AI builds AI chatbots for Mauritian businesses, deployable on websites, WhatsApp, and email. These chatbots are trained on your specific business content and available 24/7.
@@ -90,10 +90,10 @@ MAU AI's AI systems support English, French, and Mauritian Creole, making them i
 MAU AI was founded by Reezvi Pydiah (Managing Director), with a leadership team including Bhavish Nobeen (Director of Technology), Rushal Seeruthun (Director of Engineering), and Taj Aundoo (Director of Operations).
 
 **How do I get started with AI for my Mauritius business?**
-Contact MAU AI at https://mauai.co/contact or email team.mau.ai@gmail.com to book a free discovery call. The team will assess your business needs and design a custom AI solution.
+Contact MAU AI at https://mau-ai.com/contact or email team.mau.ai@gmail.com to book a free discovery call. The team will assess your business needs and design a custom AI solution.
 
 ## Pages
 
-- [Home](https://mauai.co/) — Company overview, services summary, and introduction to MAU AI
-- [Services](https://mauai.co/services) — Detailed breakdown of all six AI service categories and the engagement process
-- [Contact](https://mauai.co/contact) — Book a free AI consultation with the MAU AI team
+- [Home](https://mau-ai.com/) — Company overview, services summary, and introduction to MAU AI
+- [Services](https://mau-ai.com/services) — Detailed breakdown of all six AI service categories and the engagement process
+- [Contact](https://mau-ai.com/contact) — Book a free AI consultation with the MAU AI team

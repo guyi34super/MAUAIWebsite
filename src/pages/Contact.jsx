@@ -94,7 +94,7 @@ export default function Contact() {
     title: 'Contact MAU AI — Book a Free AI Consultation in Mauritius',
     description: 'Get in touch with MAU AI — Mauritius\'s leading AI solutions company. Book a free consultation to discover how AI can transform your business in Mauritius or Africa.',
     keywords: 'contact MAU AI, AI consultation Mauritius, book AI demo Africa, AI solutions Mauritius contact, free AI consultation',
-    url: 'https://mauai.co/contact',
+    url: 'https://mau-ai.com/contact',
   });
 
   const [form, setForm] = useState({ name: '', company: '', service: '', message: '' });
