@@ -1,13 +1,22 @@
 # MAU AI Website
 
-Marketing site for MAU AI — React + Vite, Tailwind CSS, Framer Motion, and React Router.
+Marketing site for [MAU AI](https://mauai.co) — Mauritius's AI solutions company. Built with React, Vite, Tailwind CSS, Framer Motion, and React Router.
+
+## Features
+
+- **Pages:** `/` (home), `/services`, `/contact`, `/privacy`
+- **Contact form:** visitors fill in a form, then choose Gmail, Outlook, Yahoo Mail, or their default email app to send a pre-filled inquiry
+- **SEO:** per-page meta tags via `useSEO`, JSON-LD structured data in `index.html`, plus `sitemap.xml`, `robots.txt`, and `llms.txt`
+- **Privacy:** cookie notice and privacy policy page (no tracking cookies)
+- **Security:** CSP, HSTS, and other HTTP headers configured in `vercel.json`
+- **Branding:** MU logo in navbar/footer and browser tab favicon
 
 ## Requirements
 
 - Node.js 18+ (recommended: 20 LTS)
 - npm 9+
 
-## Local development
+## Getting started
 
 Install dependencies:
 
@@ -37,37 +46,49 @@ npm run preview
 
 The build output is written to `dist/`.
 
-## Contact form
+## Environment variables
 
-The contact form on `/contact` opens the visitor's email app with a pre-filled message to `team.mau.ai@gmail.com`. The visitor reviews the draft and clicks Send in their mail app to deliver the inquiry.
-
-No API keys or third-party services are required.
-
-Optionally override the recipient in `.env.local`:
+Copy `.env.example` to `.env.local` to override the contact form recipient:
 
 ```
 VITE_CONTACT_EMAIL=team.mau.ai@gmail.com
 ```
+
+## Contact form
+
+The contact form on `/contact` does not use a backend or third-party API. After submitting the form, visitors pick their preferred email provider. A draft message to `team.mau.ai@gmail.com` opens in that service with their details pre-filled. They review and click Send to deliver the inquiry.
 
 ## Deploy on Vercel
 
 | Setting | Value |
 | --- | --- |
 | **Framework Preset** | Vite |
+| **Install Command** | `npm install` |
 | **Build Command** | `npm run build` |
 | **Output Directory** | `dist` |
-| **Install Command** | `npm install` |
 
-`vercel.json` is included for client-side routing (`/services`, `/contact`, `/privacy`, etc.) and HTTP security headers.
+`vercel.json` is included for:
+
+- Client-side routing (`/services`, `/contact`, `/privacy`, etc.)
+- HTTP security headers (CSP, HSTS, X-Frame-Options, and more)
 
 ## Project structure
 
 ```
+public/
+  favicon.png           # Browser tab icon
+  logo-mu.png           # MU logo mark
+  apple-touch-icon.png  # iOS home-screen icon
+  manifest.json         # PWA manifest
+  sitemap.xml           # SEO sitemap
+  robots.txt            # Crawler rules
+  llms.txt              # LLM discovery file
 src/
-  components/   # Navbar, Footer, Robot, LoadingScreen, ParticleCanvas, CookieNotice
-  pages/        # Home, Services, Contact, Privacy
-  App.jsx       # Routes and layout
-  main.jsx      # Entry point
+  components/           # Navbar, Footer, Robot, LoadingScreen, ParticleCanvas, CookieNotice
+  hooks/                # useSEO (per-page meta tags)
+  pages/                # Home, Services, Contact, Privacy
+  App.jsx               # Routes and layout
+  main.jsx              # Entry point
 ```
 
 ## Scripts
