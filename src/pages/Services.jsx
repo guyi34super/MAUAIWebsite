@@ -163,7 +163,7 @@ export default function Services() {
     title: 'AI Services in Mauritius & Africa — MAU AI',
     description: 'Explore MAU AI\'s full range of AI services: AI chatbots, AI virtual receptionists, custom AI automation, AI website development, AI marketing, and AI voice interfaces for businesses in Mauritius and Africa.',
     keywords: 'AI chatbot Mauritius, AI receptionist Africa, AI automation Mauritius, custom AI solutions Africa, AI website Mauritius, AI marketing Africa, AI voice Mauritius, MAU AI services',
-    url: 'https://mauai.co/services',
+    url: 'https://mau-ai.com/services',
   });
 
   return (

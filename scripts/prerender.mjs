@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, '..', 'dist');
-const SITE = 'https://mauai.co';
+const SITE = 'https://mau-ai.com';
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -44,7 +44,7 @@ const footer = `
     <p><strong>MAU AI</strong> — Mauritius's leading AI solutions company, serving
     businesses across Mauritius, the Indian Ocean and Africa.</p>
     <p>Email: <a href="mailto:team.mau.ai@gmail.com">team.mau.ai@gmail.com</a> ·
-    <a href="https://mauai.co">https://mauai.co</a></p>
+    <a href="https://mau-ai.com">https://mau-ai.com</a></p>
     <p>AI Chatbots · AI Virtual Receptionists · Custom AI Automation ·
     AI Website Development · AI Marketing · AI Voice Interfaces</p>
   </footer>`;
@@ -111,7 +111,7 @@ const home = `
     <p>Yes. Based in Mauritius — Africa's technology and business gateway — MAU AI
     serves businesses across Africa with multilingual AI in English, French and Creole.</p>
     <h3>How do I get started with AI for my business?</h3>
-    <p>Book a free discovery call with MAU AI at <a href="/contact">mauai.co/contact</a>.
+    <p>Book a free discovery call with MAU AI at <a href="/contact">mau-ai.com/contact</a>.
     We assess your needs, design a tailored AI solution, build and integrate it, then
     launch and optimise for results.</p>
   </article>`;
