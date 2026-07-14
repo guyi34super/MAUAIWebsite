@@ -1,19 +1,32 @@
 # MO Intelligence Website
 
-Marketing site and product docs for [MO Intelligence](https://moi-ai.dev) — Mauritius's AI solutions company. Built with React, Vite, Tailwind CSS, Framer Motion, React Router, and Three.js.
+Marketing site and product documentation for [MO Intelligence](https://moi-ai.dev) — Mauritius's AI solutions company.
+
+**Live site:** [moi-ai.dev](https://moi-ai.dev)  
+**Stack:** React 18 · Vite 5 · Tailwind CSS · Framer Motion · React Router · Three.js
 
 ## Features
 
-- **Marketing pages:** `/` (home), `/services`, `/contact`, `/privacy`
-- **Product docs:** `/docs` with Call Center guides (`/docs/call-center`, features, how-it-works, billing, get-started)
-- **3D robot mascot:** interactive Three.js hero on the home page (lazy-loaded)
-- **Unified shell:** shared header, footer, and layout across marketing and docs
-- **Contact form:** visitors fill in a form, then choose Gmail, Outlook, Yahoo Mail, or their default email app to send a pre-filled inquiry
-- **SEO:** per-page meta tags via `useSEO`, JSON-LD structured data in `index.html`, plus `sitemap.xml`, `robots.txt`, and `llms.txt`
-- **Build-time prerendering:** `scripts/prerender.mjs` writes static HTML for every route so crawlers and AI search bots see real page content
-- **Privacy:** cookie notice and privacy policy page (no tracking cookies)
-- **Security:** CSP, HSTS, and other HTTP headers configured in `vercel.json`
-- **Branding:** MO Intelligence logo in navbar/footer and browser tab favicon
+### Marketing site
+- `/` — home page with interactive 3D robot mascot (lazy-loaded via Three.js)
+- `/services` — six AI service categories with detailed feature lists
+- `/contact` — inquiry form that opens a pre-filled draft in the visitor's email app
+- `/privacy` — privacy policy and cookie notice (no tracking cookies)
+
+### Product docs
+- `/docs` — documentation hub
+- `/docs/call-center` — Call Center overview
+- `/docs/call-center/features`
+- `/docs/call-center/how-it-works`
+- `/docs/call-center/billing`
+- `/docs/call-center/get-started`
+
+### Platform
+- **Unified shell** — shared header, footer, and layout across marketing and docs
+- **SEO** — per-page meta tags (`useSEO`), JSON-LD in `index.html`, geo tags, Open Graph, `sitemap.xml`, `robots.txt`, and `llms.txt`
+- **Prerendering** — `scripts/prerender.mjs` writes static HTML for every route at build time so search engines and AI crawlers index real content
+- **Security** — CSP, HSTS, X-Frame-Options, and other headers in `vercel.json`
+- **Branding** — MO Intelligence logo, favicon, PWA manifest, and OG image
 
 ## Requirements
 
@@ -22,37 +35,23 @@ Marketing site and product docs for [MO Intelligence](https://moi-ai.dev) — Ma
 
 ## Getting started
 
-Install dependencies:
-
 ```bash
 npm install
-```
-
-Start the dev server:
-
-```bash
 npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173).
 
-Build for production:
+Build and preview:
 
 ```bash
-npm run build
-```
-
-The build runs Vite, then prerenders all routes into `dist/`.
-
-Preview the production build locally:
-
-```bash
-npm run preview
+npm run build    # Vite build + prerender all routes into dist/
+npm run preview  # Serve the production build locally
 ```
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local` to override the contact form recipient:
+Copy `.env.example` to `.env.local`:
 
 ```
 VITE_CONTACT_EMAIL=team.mau.ai@gmail.com
@@ -60,62 +59,60 @@ VITE_CONTACT_EMAIL=team.mau.ai@gmail.com
 
 ## Contact form
 
-The contact form on `/contact` does not use a backend or third-party API. After submitting the form, visitors pick their preferred email provider. A draft message to `team.mau.ai@gmail.com` opens in that service with their details pre-filled. They review and click Send to deliver the inquiry.
+No backend or third-party API. After submitting the form on `/contact`, visitors choose Gmail, Outlook, Yahoo Mail, or their default email client. A draft to `team.mau.ai@gmail.com` opens with their details pre-filled.
 
 ## Deploy on Vercel
 
 | Setting | Value |
 | --- | --- |
-| **Framework Preset** | Vite |
-| **Install Command** | `npm install` |
-| **Build Command** | `npm run build` |
-| **Output Directory** | `dist` |
+| Framework Preset | Vite |
+| Install Command | `npm install` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
 
-`vercel.json` is included for:
+[`vercel.json`](vercel.json) configures:
 
-- Client-side routing (`/services`, `/contact`, `/docs`, etc.)
-- HTTP security headers (CSP, HSTS, X-Frame-Options, and more)
+- `trailingSlash: false` — routes like `/services` resolve consistently
+- SPA rewrites for client-side routing
+- Security headers (CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy)
+- Cache and content-type headers for `sitemap.xml`, `robots.txt`, `llms.txt`, and `manifest.json`
 
-Ensure the GitHub commit author is linked to a Vercel account that is a member of the project's team. Commits from unlinked or unauthorized authors will be blocked on deploy.
+### Deployment access
+
+Vercel checks the **Git commit author** against linked team members. If a deploy is blocked with *"commit author does not have contributing access"*:
+
+1. Link GitHub (`guyi34super`) in [Vercel Account Settings → Authentication](https://vercel.com/account/settings/authentication)
+2. Ensure the commit author email matches the linked GitHub account:
+   ```bash
+   git config user.name "Bhavish11"
+   git config user.email "67825986+guyi34super@users.noreply.github.com"
+   ```
+3. Push a new commit or redeploy from the Vercel dashboard
 
 ## Project structure
 
 ```
 public/
-  favicon.png           # Browser tab icon
-  logo-mu.png           # MO Intelligence logo mark
-  og-image.png          # Open Graph share image
-  apple-touch-icon.png  # iOS home-screen icon
-  manifest.json         # PWA manifest
-  sitemap.xml           # SEO sitemap
-  robots.txt            # Crawler rules
-  llms.txt              # LLM discovery file
+  favicon.png, logo-mu.png, og-image.png, apple-touch-icon.png
+  manifest.json, sitemap.xml, robots.txt, llms.txt
 scripts/
-  prerender.mjs         # Build-time static HTML generation for all routes
+  prerender.mjs              # Static HTML for all routes at build time
 src/
   components/
-    layout/             # SiteHeader, SiteFooter, SiteShell, AppLayout
-    marketing/          # PageHero, SectionBlock, FeatureGrid, FaqList, CtaBand
-    docs/               # DocsSidebar, DocsArticle, DocsBreadcrumb, etc.
-    Robot3D.jsx         # Three.js robot mascot
-    Robot3DLazy.jsx     # Lazy-loaded wrapper for the 3D hero
-    CookieNotice.jsx    # Privacy cookie banner
-    LoadingScreen.jsx   # Initial page load animation
-  config/
-    brand.js            # Site name, URL, email, and default SEO values
+    layout/                  # SiteHeader, SiteFooter, SiteShell, AppLayout
+    marketing/               # PageHero, SectionBlock, FeatureGrid, FaqList, CtaBand
+    docs/                    # DocsSidebar, DocsArticle, DocsBreadcrumb, etc.
+    Robot3D.jsx              # Three.js robot mascot
+    Robot3DLazy.jsx          # Lazy-loaded 3D hero wrapper
+    CookieNotice.jsx, LoadingScreen.jsx, ErrorBoundary.jsx
+  config/brand.js            # Site name, URL, email, default SEO
   content/
-    marketing.js        # Home/services page copy and data
-    docs/callCenter.js  # Call Center documentation content
-  hooks/
-    useSEO.js           # Per-page meta tags
-  pages/
-    Home.jsx            # Landing page with 3D robot hero
-    Services.jsx
-    Contact.jsx
-    Privacy.jsx
-    docs/               # Docs hub and Call Center doc pages
-  App.jsx               # Routes and layout
-  main.jsx              # Entry point
+    marketing.js             # Services, team, FAQs, industries
+    docs/callCenter.js       # Call Center documentation content
+  hooks/useSEO.js            # Per-page title, description, canonical URL
+  pages/                     # Home, Services, Contact, Privacy, docs/*
+  App.jsx                    # Routes and loading screen
+  main.jsx                   # Entry point
 ```
 
 ## Scripts
@@ -123,5 +120,12 @@ src/
 | Command | Description |
 | --- | --- |
 | `npm run dev` | Start Vite dev server |
-| `npm run build` | Create production build and prerender all routes into `dist/` |
-| `npm run preview` | Serve the production build locally |
+| `npm run build` | Production build + prerender all routes |
+| `npm run preview` | Serve `dist/` locally |
+
+## Team
+
+- Reezvi Pydiah — Founder & Managing Director
+- Bhavish Nobeen — Director of Technology
+- Rushal Seeruthun — Director of Engineering
+- Taj Aundoo — Director of Operations
