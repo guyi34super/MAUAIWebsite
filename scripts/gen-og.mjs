@@ -1,7 +1,7 @@
 /**
  * Generates public/og-image.png (1200x630) — the social/share preview image
  * referenced by the Open Graph and Twitter Card meta tags. Self-contained:
- * encodes a PNG with Node's zlib, drawing the "MAU AI" wordmark and tagline
+ * encodes a PNG with Node's zlib, drawing the "MO Intelligence" wordmark and tagline
  * using a built-in 5x7 bitmap font. Run with: node scripts/gen-og.mjs
  */
 import { writeFileSync } from 'node:fs';
@@ -75,7 +75,7 @@ fill(0x0d, 0x0d, 0x12);
 rect(0, 0, W, 8, 0xff, 0xff, 0xff);
 
 // Wordmark + tagline + descriptor, centered.
-drawCentered('MAU AI', 215, 26, 0xff, 0xff, 0xff);
+drawCentered('MO INTELLIGENCE', 215, 22, 0xff, 0xff, 0xff);
 rect(Math.round((W - 360) / 2), 410, 360, 4, 0x55, 0x55, 0x66);
 drawCentered('INTELLIGENCE THAT WORKS', 450, 7, 0xcf, 0xcf, 0xda);
 drawCentered('AI SOLUTIONS  MAURITIUS & AFRICA', 510, 6, 0x88, 0x88, 0x99);

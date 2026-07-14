@@ -1,9 +1,10 @@
-import { motion } from 'framer-motion';
+import useSEO from '../hooks/useSEO';
+import PageHero from '../components/marketing/PageHero';
 
 const sections = [
   {
     title: 'Cookies & Tracking',
-    body: 'MAU AI does not use tracking, analytics, or advertising cookies. We do not collect personal data through cookies on this website.',
+    body: 'MO Intelligence does not use tracking, analytics, or advertising cookies. We do not collect personal data through cookies on this website.',
   },
   {
     title: 'Local Storage',
@@ -24,42 +25,29 @@ const sections = [
 ];
 
 export default function Privacy() {
+  useSEO({
+    title: 'Privacy Policy — MO Intelligence',
+    description: 'How MO Intelligence handles your data when you visit our website.',
+    url: 'https://moi-ai.dev/privacy',
+  });
+
   return (
     <>
-      <section className="relative z-10 text-center overflow-hidden" style={{ padding: '160px 64px 72px', background: '#fafafa' }}>
-        <motion.div
-          className="relative max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 28 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <span className="tag-pill inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase mb-5">
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0d0d12', display: 'inline-block' }} />
-            Privacy
-          </span>
-          <h1 className="font-extrabold tracking-tight" style={{ fontSize: 'clamp(2.4rem,5vw,3.8rem)', letterSpacing: '-1.5px', lineHeight: 1.08, color: '#0d0d12' }}>
-            Privacy Policy
-          </h1>
-          <div className="section-line" style={{ margin: '18px auto' }} />
-          <p className="text-base leading-8" style={{ color: '#6b7280' }}>
-            How MAU AI handles your data when you visit our website.
-          </p>
-        </motion.div>
-      </section>
+      <PageHero
+        eyebrow="Privacy"
+        title="Privacy Policy"
+        subtitle="How MO Intelligence handles your data when you visit our website."
+      />
 
-      <section className="relative z-10" style={{ background: '#f2f3f5', padding: '60px 64px 110px' }}>
-        <div className="max-w-3xl mx-auto">
-          {sections.map(({ title, body }) => (
-            <div key={title} className="glass-card rounded-2xl p-8 mb-5" style={{ border: '1px solid #e8e8ec' }}>
-              <h2 className="font-bold text-lg mb-3" style={{ color: '#0d0d12' }}>{title}</h2>
-              <p className="text-sm leading-8" style={{ color: '#6b7280' }}>{body}</p>
-            </div>
-          ))}
-          <p className="text-xs text-center mt-8" style={{ color: '#9ca3af' }}>
-            Last updated: June 2026
-          </p>
-        </div>
-      </section>
+      <article className="site-prose docs-prose">
+        {sections.map(({ title, body }) => (
+          <section key={title}>
+            <h2>{title}</h2>
+            <p>{body}</p>
+          </section>
+        ))}
+        <p className="site-prose__meta">Last updated: June 2026</p>
+      </article>
     </>
   );
 }

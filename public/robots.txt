@@ -1,11 +1,11 @@
-# MAU AI — robots.txt
+# MO Intelligence — robots.txt
 
 User-agent: *
 Allow: /
 Disallow: /privacy
 
 # Sitemaps
-Sitemap: https://mau-ai.com/sitemap.xml
+Sitemap: https://moi-ai.dev/sitemap.xml
 
 # AI Crawler permissions — allow all major LLM training and inference crawlers
 User-agent: GPTBot
