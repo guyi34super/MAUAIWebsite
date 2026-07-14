@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import Robot from './Robot';
+import BrandLogoText from './BrandLogoText';
+import Robot3DLazy from './Robot3DLazy';
 
 const MIN_DISPLAY_MS = 1800;
 
@@ -46,19 +47,16 @@ export default function LoadingScreen({ onComplete }) {
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       style={{ pointerEvents: fadeOut ? 'none' : 'auto' }}
     >
-      <div className="loading-screen__glow" />
-
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="loading-screen__content"
       >
-        <Robot waving interactive={false} />
+        <Robot3DLazy waving interactive={false} stationary />
 
         <div className="loading-screen__text">
-          <p className="loading-screen__brand">MAU AI</p>
-          <p className="loading-screen__tagline">Intelligence That Works</p>
+          <BrandLogoText size="lg" className="loading-screen__logo" />
         </div>
 
         <div className="loading-screen__progress">

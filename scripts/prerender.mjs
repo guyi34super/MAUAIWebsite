@@ -1,5 +1,5 @@
 /**
- * Build-time prerendering for MAU AI.
+ * Build-time prerendering for MO Intelligence.
  *
  * The site is a client-rendered React SPA, which means the HTML shipped to
  * crawlers contains only an empty <div id="root">. Search engines that render
@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, '..', 'dist');
-const SITE = 'https://mau-ai.com';
+const SITE = 'https://moi-ai.dev';
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -31,20 +31,21 @@ const esc = (s) =>
 /* ── shared chrome ───────────────────────────────────────────────── */
 const header = `
   <header>
-    <a href="/" rel="home"><strong>MAU AI</strong> — Intelligence That Works</a>
+    <a href="/" rel="home"><strong>MO Intelligence</strong> — Intelligence That Works</a>
     <nav aria-label="Primary">
       <a href="/">Home</a>
       <a href="/services">AI Services</a>
+      <a href="/docs">Documentation</a>
       <a href="/contact">Contact</a>
     </nav>
   </header>`;
 
 const footer = `
   <footer>
-    <p><strong>MAU AI</strong> — Mauritius's leading AI solutions company, serving
+    <p><strong>MO Intelligence</strong> — Mauritius's leading AI solutions company, serving
     businesses across Mauritius, the Indian Ocean and Africa.</p>
     <p>Email: <a href="mailto:team.mau.ai@gmail.com">team.mau.ai@gmail.com</a> ·
-    <a href="https://mau-ai.com">https://mau-ai.com</a></p>
+    <a href="https://moi-ai.dev">https://moi-ai.dev</a></p>
     <p>AI Chatbots · AI Virtual Receptionists · Custom AI Automation ·
     AI Website Development · AI Marketing · AI Voice Interfaces</p>
   </footer>`;
@@ -66,8 +67,8 @@ const serviceList = `<ul>${services
 const home = `
   <article>
     <p>Mauritius-based AI solutions · Intelligence That Works</p>
-    <h1>MAU AI — Mauritius's #1 AI Solutions Company for Mauritius &amp; Africa</h1>
-    <p>MAU AI is Mauritius's leading artificial intelligence company. We design and
+    <h1>MO Intelligence — Mauritius's #1 AI Solutions Company for Mauritius &amp; Africa</h1>
+    <p>MO Intelligence is Mauritius's leading artificial intelligence company. We design and
     build custom AI systems — AI chatbots, AI virtual receptionists, workflow
     automation, AI websites, AI marketing and AI voice interfaces — for businesses
     across Mauritius, the Indian Ocean islands and the wider African continent.</p>
@@ -80,7 +81,7 @@ const home = `
     ${serviceList}
 
     <h2>Mauritius's Leading AI Company, Built for Africa</h2>
-    <p>MAU AI helps businesses in Mauritius and across Africa automate operations,
+    <p>MO Intelligence helps businesses in Mauritius and across Africa automate operations,
     improve customer experience, increase revenue and save time through custom-built
     intelligent systems. Mauritius is Africa's technology gateway, and our
     multilingual AI (English, French and Creole) is designed for both Anglophone and
@@ -100,18 +101,18 @@ const home = `
     e-commerce and finance across Mauritius and Africa.</p>
 
     <h2>Frequently Asked Questions</h2>
-    <h3>What is MAU AI?</h3>
-    <p>MAU AI is Mauritius's leading artificial intelligence company. We build custom
+    <h3>What is MO Intelligence?</h3>
+    <p>MO Intelligence is Mauritius's leading artificial intelligence company. We build custom
     AI chatbots, AI virtual receptionists, workflow automation, AI websites, AI
     marketing systems and AI voice interfaces for businesses across Mauritius and Africa.</p>
     <h3>Which AI company is based in Mauritius?</h3>
-    <p>MAU AI is Mauritius's top AI solutions company, headquartered in Mauritius and
+    <p>MO Intelligence is Mauritius's top AI solutions company, headquartered in Mauritius and
     serving businesses throughout Mauritius, the Indian Ocean islands and the African continent.</p>
-    <h3>Does MAU AI serve businesses in Africa?</h3>
-    <p>Yes. Based in Mauritius — Africa's technology and business gateway — MAU AI
+    <h3>Does MO Intelligence serve businesses in Africa?</h3>
+    <p>Yes. Based in Mauritius — Africa's technology and business gateway — MO Intelligence
     serves businesses across Africa with multilingual AI in English, French and Creole.</p>
     <h3>How do I get started with AI for my business?</h3>
-    <p>Book a free discovery call with MAU AI at <a href="/contact">mau-ai.com/contact</a>.
+    <p>Book a free discovery call with MO Intelligence at <a href="/contact">moi-ai.dev/contact</a>.
     We assess your needs, design a tailored AI solution, build and integrate it, then
     launch and optimise for results.</p>
   </article>`;
@@ -121,7 +122,7 @@ const servicesPage = `
     <p>What we build</p>
     <h1>AI Services in Mauritius &amp; Africa</h1>
     <p>End-to-end AI solutions custom-built for businesses in Mauritius and across
-    Africa. Each MAU AI service is designed to create measurable, lasting results.</p>
+    Africa. Each MO Intelligence service is designed to create measurable, lasting results.</p>
 
     <h2>Our Six AI Service Categories</h2>
     ${serviceList}
@@ -141,23 +142,73 @@ const servicesPage = `
 const contactPage = `
   <article>
     <p>Get in touch</p>
-    <h1>Contact MAU AI — Book a Free AI Consultation</h1>
+    <h1>Contact MO Intelligence — Book a Free AI Consultation</h1>
     <p>Ready to bring AI to your business in Mauritius or Africa? Book a free
-    discovery call with MAU AI. We'll assess your needs and design a custom AI
+    discovery call with MO Intelligence. We'll assess your needs and design a custom AI
     solution — AI chatbot, AI receptionist, automation, AI website, AI marketing or
     AI voice — tailored to your business.</p>
     <p>Email: <a href="mailto:team.mau.ai@gmail.com">team.mau.ai@gmail.com</a></p>
-    <p>MAU AI serves businesses across Mauritius, the Indian Ocean and Africa, with
+    <p>MO Intelligence serves businesses across Mauritius, the Indian Ocean and Africa, with
     AI support in English, French and Mauritian Creole.</p>
     <p><a href="/services">View all AI services</a> · <a href="/">Back to home</a></p>
   </article>`;
 
 const privacyPage = `
   <article>
-    <h1>Privacy Policy — MAU AI</h1>
-    <p>This page describes how MAU AI handles information. For questions, contact
+    <h1>Privacy Policy — MO Intelligence</h1>
+    <p>This page describes how MO Intelligence handles information. For questions, contact
     <a href="mailto:team.mau.ai@gmail.com">team.mau.ai@gmail.com</a>.</p>
     <p><a href="/">Back to home</a></p>
+  </article>`;
+
+const docsHubPage = `
+  <article>
+    <h1>Documentation — MO Intelligence</h1>
+    <p>Product guides and overviews for MO Intelligence solutions.</p>
+    <h2>Call Center</h2>
+    <p>Web-Based Contact Management Platform. A browser-based platform that gives teams
+    a single, organized place to manage inbound and outbound customer conversations.</p>
+    <p><a href="/docs/call-center">View Call Center documentation</a></p>
+  </article>`;
+
+const callCenterOverviewPage = `
+  <article>
+    <h1>Call Center Overview — MO Intelligence Docs</h1>
+    <p>Call Center is a browser-based platform that gives teams a single, organized place
+    to manage inbound and outbound customer conversations.</p>
+    <p><a href="/docs/call-center/features">Features</a> ·
+    <a href="/docs/call-center/how-it-works">How It Works</a> ·
+    <a href="/docs/call-center/billing">Billing</a> ·
+    <a href="/docs/call-center/get-started">Get Started</a></p>
+  </article>`;
+
+const callCenterFeaturesPage = `
+  <article>
+    <h1>Call Center Features — MO Intelligence Docs</h1>
+    <p>Contact handling, agent workspace, live status, records, billing, and reporting.</p>
+    <p><a href="/docs/call-center">Back to overview</a></p>
+  </article>`;
+
+const callCenterHowItWorksPage = `
+  <article>
+    <h1>How Call Center Works — MO Intelligence Docs</h1>
+    <p>Sign in, receive, handle, bill, and track every customer interaction.</p>
+    <p><a href="/docs/call-center">Back to overview</a></p>
+  </article>`;
+
+const callCenterBillingPage = `
+  <article>
+    <h1>Call Center Billing — MO Intelligence Docs</h1>
+    <p>Integrated billing and invoicing with automatic capture, itemized invoices, and payment tracking.</p>
+    <p><a href="/docs/call-center">Back to overview</a></p>
+  </article>`;
+
+const callCenterGetStartedPage = `
+  <article>
+    <h1>Get Started with Call Center — MO Intelligence Docs</h1>
+    <p>Book a guided walkthrough and get a tailored quotation for your team.</p>
+    <p>Email: <a href="mailto:team.mau.ai@gmail.com">team.mau.ai@gmail.com</a> ·
+    <a href="/contact">Book a consultation</a></p>
   </article>`;
 
 /* ── routes ──────────────────────────────────────────────────────── */
@@ -165,33 +216,75 @@ const routes = [
   {
     out: 'index.html',
     path: '/',
-    title: 'MAU AI — #1 AI Solutions Company in Mauritius & Africa',
+    title: 'MO Intelligence — #1 AI Solutions Company in Mauritius & Africa',
     description:
-      "MAU AI is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites and AI voice systems for businesses across Mauritius and Africa. Book a free consultation today.",
+      "MO Intelligence is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites and AI voice systems for businesses across Mauritius and Africa. Book a free consultation today.",
     body: home,
   },
   {
     out: 'services/index.html',
     path: '/services',
-    title: 'AI Services in Mauritius & Africa — MAU AI',
+    title: 'AI Services in Mauritius & Africa — MO Intelligence',
     description:
-      "Explore MAU AI's full range of AI services: AI chatbots, AI virtual receptionists, custom AI automation, AI website development, AI marketing and AI voice interfaces for businesses in Mauritius and Africa.",
+      "Explore MO Intelligence's full range of AI services: AI chatbots, AI virtual receptionists, custom AI automation, AI website development, AI marketing and AI voice interfaces for businesses in Mauritius and Africa.",
     body: servicesPage,
   },
   {
     out: 'contact/index.html',
     path: '/contact',
-    title: 'Contact MAU AI — Book a Free AI Consultation in Mauritius',
+    title: 'Contact MO Intelligence — Book a Free AI Consultation in Mauritius',
     description:
-      "Contact MAU AI to book a free AI consultation. Mauritius's leading AI company builds AI chatbots, receptionists, automation, websites and voice AI for businesses in Mauritius and Africa.",
+      "Contact MO Intelligence to book a free AI consultation. Mauritius's leading AI company builds AI chatbots, receptionists, automation, websites and voice AI for businesses in Mauritius and Africa.",
     body: contactPage,
   },
   {
     out: 'privacy/index.html',
     path: '/privacy',
-    title: 'Privacy Policy — MAU AI',
-    description: 'Privacy policy for MAU AI, Mauritius AI solutions company.',
+    title: 'Privacy Policy — MO Intelligence',
+    description: 'Privacy policy for MO Intelligence, MO Intelligence solutions company.',
     body: privacyPage,
+  },
+  {
+    out: 'docs/index.html',
+    path: '/docs',
+    title: 'Documentation — MO Intelligence',
+    description: 'Product documentation for MO Intelligence solutions. Explore Call Center, a web-based contact management platform.',
+    body: docsHubPage,
+  },
+  {
+    out: 'docs/call-center/index.html',
+    path: '/docs/call-center',
+    title: 'Call Center Overview — MO Intelligence Docs',
+    description: 'Overview of Call Center, a browser-based platform for managing inbound and outbound customer conversations.',
+    body: callCenterOverviewPage,
+  },
+  {
+    out: 'docs/call-center/features/index.html',
+    path: '/docs/call-center/features',
+    title: 'Call Center Features — MO Intelligence Docs',
+    description: 'Explore Call Center capabilities: contact handling, agent workspace, live status, records, billing, and reporting.',
+    body: callCenterFeaturesPage,
+  },
+  {
+    out: 'docs/call-center/how-it-works/index.html',
+    path: '/docs/call-center/how-it-works',
+    title: 'How Call Center Works — MO Intelligence Docs',
+    description: 'Learn the Call Center workflow: sign in, receive, handle, bill, and track every customer interaction.',
+    body: callCenterHowItWorksPage,
+  },
+  {
+    out: 'docs/call-center/billing/index.html',
+    path: '/docs/call-center/billing',
+    title: 'Call Center Billing — MO Intelligence Docs',
+    description: 'Integrated billing and invoicing for Call Center: automatic capture, itemized invoices, payment tracking, and exports.',
+    body: callCenterBillingPage,
+  },
+  {
+    out: 'docs/call-center/get-started/index.html',
+    path: '/docs/call-center/get-started',
+    title: 'Get Started with Call Center — MO Intelligence Docs',
+    description: 'Book a guided walkthrough and get a tailored quotation for Call Center based on your team size.',
+    body: callCenterGetStartedPage,
   },
 ];
 

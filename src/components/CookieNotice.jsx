@@ -18,7 +18,7 @@ export default function CookieNotice() {
     try {
       localStorage.setItem(STORAGE_KEY, '1');
     } catch {
-      // localStorage unavailable — hide for this session only
+      // localStorage unavailable
     }
     setVisible(false);
   };
@@ -26,26 +26,12 @@ export default function CookieNotice() {
   if (!visible) return null;
 
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-6 py-4"
-      style={{
-        background: '#0d0d12',
-        borderTop: '1px solid rgba(255,255,255,0.1)',
-        boxShadow: '0 -4px 24px rgba(0,0,0,0.15)',
-      }}
-      role="dialog"
-      aria-label="Cookie notice"
-    >
-      <p className="text-sm leading-6" style={{ color: 'rgba(255,255,255,0.75)', maxWidth: 640 }}>
+    <div className="site-cookie" role="dialog" aria-label="Cookie notice">
+      <p className="site-cookie__text">
         This site does not use tracking cookies. We only store a local preference when you dismiss this notice.{' '}
-        <Link to="/privacy" className="underline" style={{ color: 'white' }}>Learn more</Link>
+        <Link to="/privacy">Learn more</Link>
       </p>
-      <button
-        type="button"
-        onClick={dismiss}
-        className="flex-shrink-0 rounded-lg px-5 py-2.5 text-sm font-bold"
-        style={{ background: 'white', color: '#0d0d12', border: 'none', cursor: 'pointer' }}
-      >
+      <button type="button" onClick={dismiss} className="site-btn site-btn--primary site-cookie__btn">
         Got it
       </button>
     </div>

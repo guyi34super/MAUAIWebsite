@@ -1,14 +1,11 @@
 import { useEffect } from 'react';
-
-const SITE_URL = 'https://mau-ai.com';
+import { BRAND, brandUrl } from '../config/brand';
 
 const DEFAULTS = {
-  title: 'MAU AI — #1 AI Solutions Company in Mauritius & Africa',
-  description:
-    "MAU AI is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites and AI voice systems for businesses across Mauritius and Africa. Book a free consultation today.",
-  keywords:
-    'AI Mauritius, AI Africa, artificial intelligence Mauritius, AI company Mauritius, MAU AI, AI chatbot Mauritius, AI automation Africa',
-  url: SITE_URL + '/',
+  title: BRAND.defaultTitle,
+  description: BRAND.defaultDescription,
+  keywords: BRAND.keywords,
+  url: brandUrl('/'),
   type: 'website',
 };
 
