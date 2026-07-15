@@ -14,8 +14,8 @@ import {
 export default function Home() {
   useSEO({
     title: 'MO Intelligence — #1 AI Solutions Company in Mauritius & Africa',
-    description: "MO Intelligence is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites and AI voice systems for businesses across Mauritius and Africa. Book a free consultation today.",
-    keywords: 'AI Mauritius, AI Africa, artificial intelligence Mauritius, AI company Mauritius, MO Intelligence, AI chatbot Mauritius, AI automation Africa, AI solutions Africa, best AI company Mauritius, AI startup Mauritius',
+    description: "MO Intelligence is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites, AI voice systems, SEO, AI SEO, and Research and Development for businesses across Mauritius and Africa. Book a free consultation today.",
+    keywords: 'AI Mauritius, AI Africa, artificial intelligence Mauritius, AI company Mauritius, MO Intelligence, AI chatbot Mauritius, AI automation Africa, AI solutions Africa, best AI company Mauritius, AI startup Mauritius, SEO Mauritius, AI SEO, AI Engine Optimization, AIEO, Research and Development, AI R&D Mauritius',
     url: 'https://moi-ai.dev/',
   });
 

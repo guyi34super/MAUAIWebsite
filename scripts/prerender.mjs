@@ -47,7 +47,8 @@ const footer = `
     <p>Email: <a href="mailto:team.mau.ai@gmail.com">team.mau.ai@gmail.com</a> ·
     <a href="https://moi-ai.dev">https://moi-ai.dev</a></p>
     <p>AI Chatbots · AI Virtual Receptionists · Custom AI Automation ·
-    AI Website Development · AI Marketing · AI Voice Interfaces</p>
+    AI Website Development · AI Marketing · AI Voice Interfaces ·
+    SEO · AI SEO · Research and Development</p>
   </footer>`;
 
 const services = [
@@ -70,8 +71,9 @@ const home = `
     <h1>MO Intelligence — Mauritius's #1 AI Solutions Company for Mauritius &amp; Africa</h1>
     <p>MO Intelligence is Mauritius's leading artificial intelligence company. We design and
     build custom AI systems — AI chatbots, AI virtual receptionists, workflow
-    automation, AI websites, AI marketing and AI voice interfaces — for businesses
-    across Mauritius, the Indian Ocean islands and the wider African continent.</p>
+    automation, AI websites, AI marketing, AI voice interfaces, SEO, AI SEO, and
+    Research and Development — for businesses across Mauritius, the Indian Ocean
+    islands and the wider African continent.</p>
     <p>
       <a href="/contact">Get started — book a free consultation</a> ·
       <a href="/services">Explore our AI services</a>
@@ -79,6 +81,14 @@ const home = `
 
     <h2>Our AI Services</h2>
     ${serviceList}
+
+    <h2>SEO, AI SEO, and Research and Development</h2>
+    <p><strong>SEO.</strong> Search engine optimization for Mauritius and Africa — technical SEO,
+    on-page optimization, and local search visibility.</p>
+    <p><strong>AI SEO.</strong> AI Engine Optimization (AIEO) for LLM and AI search visibility —
+    llms.txt, structured data, and AI crawler discoverability.</p>
+    <p><strong>Research and Development.</strong> AI R&amp;D — custom solution prototyping,
+    emerging technology evaluation, and innovation partnerships.</p>
 
     <h2>Mauritius's Leading AI Company, Built for Africa</h2>
     <p>MO Intelligence helps businesses in Mauritius and across Africa automate operations,
@@ -104,7 +114,15 @@ const home = `
     <h3>What is MO Intelligence?</h3>
     <p>MO Intelligence is Mauritius's leading artificial intelligence company. We build custom
     AI chatbots, AI virtual receptionists, workflow automation, AI websites, AI
-    marketing systems and AI voice interfaces for businesses across Mauritius and Africa.</p>
+    marketing systems, AI voice interfaces, SEO, AI SEO, and Research and Development
+    for businesses across Mauritius and Africa.</p>
+    <h3>Does MO Intelligence offer SEO services?</h3>
+    <p>Yes. MO Intelligence provides SEO services for businesses in Mauritius and Africa,
+    including technical SEO, on-page optimization, and local search visibility.</p>
+    <h3>What is AI SEO?</h3>
+    <p>AI SEO (AI Engine Optimization) optimizes your business for AI search engines and LLM
+    crawlers. MO Intelligence offers llms.txt setup, structured data, and prerendered
+    content for AI discoverability.</p>
     <h3>Which AI company is based in Mauritius?</h3>
     <p>MO Intelligence is Mauritius's top AI solutions company, headquartered in Mauritius and
     serving businesses throughout Mauritius, the Indian Ocean islands and the African continent.</p>
@@ -127,6 +145,12 @@ const servicesPage = `
     <h2>Our Six AI Service Categories</h2>
     ${serviceList}
 
+    <h2>SEO, AI SEO, and Research and Development</h2>
+    <p>MO Intelligence also provides <strong>SEO</strong> (search engine optimization),
+    <strong>AI SEO</strong> (AI Engine Optimization for LLM and AI search visibility), and
+    <strong>Research and Development</strong> (AI innovation, prototyping, and R&amp;D partnerships)
+    for businesses in Mauritius and Africa.</p>
+
     <h2>How We Work</h2>
     <ol>
       <li><strong>Discovery Call.</strong> We learn about your business, goals, pain points and the opportunities AI can unlock.</li>
@@ -145,8 +169,8 @@ const contactPage = `
     <h1>Contact MO Intelligence — Book a Free AI Consultation</h1>
     <p>Ready to bring AI to your business in Mauritius or Africa? Book a free
     discovery call with MO Intelligence. We'll assess your needs and design a custom AI
-    solution — AI chatbot, AI receptionist, automation, AI website, AI marketing or
-    AI voice — tailored to your business.</p>
+    solution — AI chatbot, AI receptionist, automation, AI website, AI marketing,
+    AI voice, SEO, AI SEO, or Research and Development — tailored to your business.</p>
     <p>Email: <a href="mailto:team.mau.ai@gmail.com">team.mau.ai@gmail.com</a></p>
     <p>MO Intelligence serves businesses across Mauritius, the Indian Ocean and Africa, with
     AI support in English, French and Mauritian Creole.</p>
@@ -218,7 +242,7 @@ const routes = [
     path: '/',
     title: 'MO Intelligence — #1 AI Solutions Company in Mauritius & Africa',
     description:
-      "MO Intelligence is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites and AI voice systems for businesses across Mauritius and Africa. Book a free consultation today.",
+      "MO Intelligence is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites, AI voice systems, SEO, AI SEO, and Research and Development for businesses across Mauritius and Africa. Book a free consultation today.",
     body: home,
   },
   {
@@ -226,7 +250,7 @@ const routes = [
     path: '/services',
     title: 'AI Services in Mauritius & Africa — MO Intelligence',
     description:
-      "Explore MO Intelligence's full range of AI services: AI chatbots, AI virtual receptionists, custom AI automation, AI website development, AI marketing and AI voice interfaces for businesses in Mauritius and Africa.",
+      "Explore MO Intelligence's full range of AI services: AI chatbots, AI virtual receptionists, custom AI automation, AI website development, AI marketing, AI voice interfaces, SEO, AI SEO, and Research and Development for businesses in Mauritius and Africa.",
     body: servicesPage,
   },
   {
@@ -234,7 +258,7 @@ const routes = [
     path: '/contact',
     title: 'Contact MO Intelligence — Book a Free AI Consultation in Mauritius',
     description:
-      "Contact MO Intelligence to book a free AI consultation. Mauritius's leading AI company builds AI chatbots, receptionists, automation, websites and voice AI for businesses in Mauritius and Africa.",
+      "Contact MO Intelligence to book a free consultation for AI, SEO, AI SEO, or Research and Development. Mauritius's leading AI company builds chatbots, receptionists, automation, websites, and voice AI for businesses in Mauritius and Africa.",
     body: contactPage,
   },
   {
