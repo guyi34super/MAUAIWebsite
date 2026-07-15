@@ -9,13 +9,13 @@
  *
  * This script runs after `vite build`. It takes the built dist/index.html as a
  * template and, for every route, writes a static HTML file whose <head> carries
- * the correct per-page title/description/canonical and whose <div id="root">
- * contains real, human-readable content with internal links.
+ * the correct per-page title/description/canonical and whose hidden
+ * #static-seo-content sibling contains real, human-readable content with
+ * internal links. #root stays empty for React to mount into.
  *
- * When the React app boots in a real browser, createRoot().render() replaces
- * the contents of #root, so users get the full interactive experience while
- * crawlers get fully indexable HTML. Everyone receives identical HTML, so this
- * is progressive enhancement, not cloaking.
+ * When the React app boots in a real browser, createRoot().render() fills
+ * #root with the interactive UI. Crawlers read #static-seo-content without
+ * executing JavaScript. This is progressive enhancement, not cloaking.
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -338,11 +338,11 @@ for (const route of routes) {
     `<link rel="canonical" href="${url}" />`
   );
 
-  // Inject crawlable content into the (otherwise empty) React root.
+  // Inject crawlable content into a hidden sibling so #root stays empty for React.
   const content = `${header}${route.body}${footer}`;
   html = html.replace(
     /<div id="root">\s*<\/div>/i,
-    `<div id="root">${content}</div>`
+    `<div id="root"></div>\n<div id="static-seo-content" hidden>${content}</div>`
   );
 
   const outPath = join(DIST, route.out);
