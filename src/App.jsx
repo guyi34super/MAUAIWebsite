@@ -12,6 +12,11 @@ import CallCenterFeatures from './pages/docs/CallCenterFeatures';
 import CallCenterHowItWorks from './pages/docs/CallCenterHowItWorks';
 import CallCenterBilling from './pages/docs/CallCenterBilling';
 import CallCenterGetStarted from './pages/docs/CallCenterGetStarted';
+import MoiOverview from './pages/docs/MoiOverview';
+import MoiArchitecture from './pages/docs/MoiArchitecture';
+import MoiTraining from './pages/docs/MoiTraining';
+import MoiScaling from './pages/docs/MoiScaling';
+import MoiRoadmap from './pages/docs/MoiRoadmap';
 import CookieNotice from './components/CookieNotice';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -45,6 +50,11 @@ export default function App() {
             <Route path="/docs/call-center/how-it-works" element={<CallCenterHowItWorks />} />
             <Route path="/docs/call-center/billing" element={<CallCenterBilling />} />
             <Route path="/docs/call-center/get-started" element={<CallCenterGetStarted />} />
+            <Route path="/docs/moi" element={<MoiOverview />} />
+            <Route path="/docs/moi/architecture" element={<MoiArchitecture />} />
+            <Route path="/docs/moi/training" element={<MoiTraining />} />
+            <Route path="/docs/moi/scaling" element={<MoiScaling />} />
+            <Route path="/docs/moi/roadmap" element={<MoiRoadmap />} />
           </Route>
         </Routes>
         <CookieNotice />

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import DocsSidebar from './DocsSidebar';
+import { getDocsPagePath } from '../../content/docs/registry';
 
 export default function DocsBodyLayout({ children, sidebarOpen, setSidebarOpen }) {
   const closeSidebar = () => setSidebarOpen(false);
@@ -19,7 +20,7 @@ export default function DocsBodyLayout({ children, sidebarOpen, setSidebarOpen }
             <X size={18} />
           </button>
         </div>
-        <DocsSidebar onNavigate={closeSidebar} />
+        <DocsSidebar onNavigate={closeSidebar} getPagePath={getDocsPagePath} />
       </aside>
 
       {sidebarOpen && (

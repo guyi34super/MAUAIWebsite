@@ -1,7 +1,6 @@
-import DocsBreadcrumb from '../../components/docs/DocsBreadcrumb';
-import DocsTableOfContents from '../../components/docs/DocsTableOfContents';
-import DocsPrevNext from '../../components/docs/DocsPrevNext';
-import { getCallCenterPrevNext } from '../../content/docs/callCenter';
+import DocsBreadcrumb from './DocsBreadcrumb';
+import DocsTableOfContents from './DocsTableOfContents';
+import DocsPrevNext from './DocsPrevNext';
 
 export default function DocsArticle({
   breadcrumb,
@@ -9,9 +8,13 @@ export default function DocsArticle({
   description,
   toc = [],
   pageSlug,
+  getPrevNext,
+  getPagePath,
   children,
 }) {
-  const { prev, next } = pageSlug !== undefined ? getCallCenterPrevNext(pageSlug) : { prev: null, next: null };
+  const { prev, next } = pageSlug !== undefined && getPrevNext
+    ? getPrevNext(pageSlug)
+    : { prev: null, next: null };
 
   return (
     <article className="docs-article">
@@ -28,7 +31,9 @@ export default function DocsArticle({
             </div>
           )}
           <div className="docs-prose">{children}</div>
-          {pageSlug !== undefined && <DocsPrevNext prev={prev} next={next} />}
+          {pageSlug !== undefined && getPagePath && (
+            <DocsPrevNext prev={prev} next={next} getPagePath={getPagePath} />
+          )}
         </div>
         {toc.length > 0 && (
           <div className="docs-article__toc">

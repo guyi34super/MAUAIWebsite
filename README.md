@@ -21,6 +21,11 @@ Marketing site and product documentation for [MO Intelligence](https://moi-ai.de
 - `/docs/call-center/how-it-works` — end-to-end workflow
 - `/docs/call-center/billing` — integrated billing and invoicing
 - `/docs/call-center/get-started` — onboarding and consultation
+- `/docs/moi` — MOI AI overview (Mauritius Own LLM, R&D)
+- `/docs/moi/architecture` — decoder-only transformer architecture
+- `/docs/moi/training` — install, smoke test, and training guide
+- `/docs/moi/scaling` — R0–R4 scaling ladder
+- `/docs/moi/roadmap` — development stages and references
 
 ### Platform
 - **Unified shell** — shared header, footer, and layout across marketing and docs

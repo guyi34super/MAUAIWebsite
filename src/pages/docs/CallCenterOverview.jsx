@@ -1,7 +1,7 @@
 import useSEO from '../../hooks/useSEO';
 import DocsArticle from '../../components/docs/DocsArticle';
 import DocsCallout from '../../components/docs/DocsCallout';
-import { callCenterNav, overviewContent, docsSeo } from '../../content/docs/callCenter';
+import { callCenterNav, overviewContent, docsSeo, getCallCenterPrevNext, getCallCenterPagePath } from '../../content/docs/callCenter';
 
 export default function CallCenterOverview() {
   useSEO({
@@ -21,6 +21,8 @@ export default function CallCenterOverview() {
       description={callCenterNav.tagline}
       toc={overviewContent.toc}
       pageSlug=""
+      getPrevNext={getCallCenterPrevNext}
+      getPagePath={getCallCenterPagePath}
     >
       <section id="introduction">
         <h2>Introduction</h2>

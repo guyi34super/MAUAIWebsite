@@ -1,7 +1,7 @@
 import useSEO from '../../hooks/useSEO';
 import DocsArticle from '../../components/docs/DocsArticle';
 import DocsStepList from '../../components/docs/DocsStepList';
-import { callCenterNav, howItWorksContent, docsSeo } from '../../content/docs/callCenter';
+import { callCenterNav, howItWorksContent, docsSeo, getCallCenterPrevNext, getCallCenterPagePath } from '../../content/docs/callCenter';
 
 export default function CallCenterHowItWorks() {
   useSEO({
@@ -21,6 +21,8 @@ export default function CallCenterHowItWorks() {
       description="From sign-in to follow-up — the Call Center workflow in five steps."
       toc={howItWorksContent.toc}
       pageSlug="how-it-works"
+      getPrevNext={getCallCenterPrevNext}
+      getPagePath={getCallCenterPagePath}
     >
       <section id="workflow">
         <h2>Workflow</h2>

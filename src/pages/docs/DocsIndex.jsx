@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { BookOpen, ArrowRight } from 'lucide-react';
 import useSEO from '../../hooks/useSEO';
-import { docsProducts, docsSeo } from '../../content/docs/callCenter';
+import { docsProducts } from '../../content/docs/registry';
+import { docsSeo } from '../../content/docs/callCenter';
 
 export default function DocsIndex() {
   useSEO({
@@ -18,7 +19,7 @@ export default function DocsIndex() {
         </div>
         <h1 className="docs-hub__title">Documentation</h1>
         <p className="docs-hub__subtitle">
-          Product guides and overviews for MO Intelligence solutions. Select a product to get started.
+          Product guides, R&D documentation, and overviews for MO Intelligence solutions.
         </p>
       </header>
 
