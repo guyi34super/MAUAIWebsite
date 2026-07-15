@@ -1,7 +1,7 @@
 import useSEO from '../../hooks/useSEO';
 import DocsArticle from '../../components/docs/DocsArticle';
 import DocsFeatureGrid from '../../components/docs/DocsFeatureGrid';
-import { callCenterNav, featuresContent, docsSeo } from '../../content/docs/callCenter';
+import { callCenterNav, featuresContent, docsSeo, getCallCenterPrevNext, getCallCenterPagePath } from '../../content/docs/callCenter';
 
 export default function CallCenterFeatures() {
   useSEO({
@@ -21,6 +21,8 @@ export default function CallCenterFeatures() {
       description="Core capabilities for managing customer conversations end to end."
       toc={featuresContent.toc}
       pageSlug="features"
+      getPrevNext={getCallCenterPrevNext}
+      getPagePath={getCallCenterPagePath}
     >
       <section id="overview">
         <h2>Overview</h2>

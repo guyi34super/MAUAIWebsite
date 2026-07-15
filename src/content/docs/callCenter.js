@@ -29,15 +29,6 @@ export function getCallCenterPrevNext(slug) {
   };
 }
 
-export const docsProducts = [
-  {
-    slug: 'call-center',
-    title: 'Call Center',
-    tagline: callCenterNav.tagline,
-    description: callCenterNav.description,
-    href: '/docs/call-center',
-  },
-];
 
 export const overviewContent = {
   intro: [
@@ -166,7 +157,7 @@ export const getStartedContent = {
 export const docsSeo = {
   hub: {
     title: 'Documentation — MO Intelligence',
-    description: 'Product documentation for MO Intelligence solutions. Explore Call Center, a web-based contact management platform.',
+    description: 'Product documentation for MO Intelligence solutions. Explore Call Center and MOI AI research & development.',
     url: 'https://moi-ai.dev/docs',
   },
   overview: {

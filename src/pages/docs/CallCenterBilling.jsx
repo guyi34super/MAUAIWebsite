@@ -1,6 +1,6 @@
 import useSEO from '../../hooks/useSEO';
 import DocsArticle from '../../components/docs/DocsArticle';
-import { callCenterNav, billingContent, docsSeo } from '../../content/docs/callCenter';
+import { callCenterNav, billingContent, docsSeo, getCallCenterPrevNext, getCallCenterPagePath } from '../../content/docs/callCenter';
 
 export default function CallCenterBilling() {
   useSEO({
@@ -20,6 +20,8 @@ export default function CallCenterBilling() {
       description="Integrated billing that turns logged activity into professional invoices."
       toc={billingContent.toc}
       pageSlug="billing"
+      getPrevNext={getCallCenterPrevNext}
+      getPagePath={getCallCenterPagePath}
     >
       <section id="overview">
         <h2>Overview</h2>

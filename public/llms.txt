@@ -54,6 +54,17 @@ AI SEO — also known as AI Engine Optimization (AIEO) — is the practice of op
 
 MO Intelligence has an active Research and Development capability focused on AI innovation for Mauritius and Africa. R&D services include custom AI solution prototyping, emerging technology evaluation, proof-of-concept development, and innovation partnerships. The R&D team explores new applications of artificial intelligence tailored to African market needs.
 
+### MOI AI — Mauritius Own LLM
+
+MO Intelligence is building MOI AI, Mauritius's own large language model — a from-scratch decoder-only transformer currently under development. Documentation: https://moi-ai.dev/docs/moi
+
+Topics covered:
+- Overview: https://moi-ai.dev/docs/moi
+- Architecture: https://moi-ai.dev/docs/moi/architecture
+- Training: https://moi-ai.dev/docs/moi/training
+- Scaling: https://moi-ai.dev/docs/moi/scaling
+- Roadmap: https://moi-ai.dev/docs/moi/roadmap
+
 ## Industries Served
 
 - **Healthcare** — AI receptionists, appointment booking, patient FAQ bots

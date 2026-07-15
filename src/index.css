@@ -1623,6 +1623,72 @@ body {
   margin-bottom: 16px;
 }
 
+.docs-prose ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 16px;
+}
+
+.docs-prose li {
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: #424242;
+  margin-bottom: 8px;
+}
+
+.docs-prose h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0d0d12;
+  margin: 24px 0 8px;
+}
+
+.docs-table-wrap {
+  overflow-x: auto;
+  margin: 16px 0 24px;
+}
+
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.docs-table th,
+.docs-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border: 1px solid #e1e1e1;
+}
+
+.docs-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #0d0d12;
+}
+
+.docs-table td {
+  color: #424242;
+}
+
+.docs-code {
+  background: #0d0d12;
+  color: #e8e8e8;
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 12px 0 20px;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.docs-code code {
+  font-family: inherit;
+}
+
 .docs-toc {
   position: sticky;
   top: 80px;

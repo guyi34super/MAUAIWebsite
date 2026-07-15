@@ -188,11 +188,15 @@ const privacyPage = `
 const docsHubPage = `
   <article>
     <h1>Documentation — MO Intelligence</h1>
-    <p>Product guides and overviews for MO Intelligence solutions.</p>
+    <p>Product guides, R&amp;D documentation, and overviews for MO Intelligence solutions.</p>
     <h2>Call Center</h2>
     <p>Web-Based Contact Management Platform. A browser-based platform that gives teams
     a single, organized place to manage inbound and outbound customer conversations.</p>
     <p><a href="/docs/call-center">View Call Center documentation</a></p>
+    <h2>Research &amp; Development — MOI AI</h2>
+    <p>Mauritius Own LLM. MO Intelligence's from-scratch decoder-only transformer,
+    currently under development at the 100M-parameter scale.</p>
+    <p><a href="/docs/moi">View MOI AI documentation</a></p>
   </article>`;
 
 const callCenterOverviewPage = `
@@ -235,6 +239,47 @@ const callCenterGetStartedPage = `
     <a href="/contact">Book a consultation</a></p>
   </article>`;
 
+const moiOverviewPage = `
+  <article>
+    <h1>MOI AI Overview — MO Intelligence R&amp;D Docs</h1>
+    <p>MOI AI is Mauritius's own large language model — a from-scratch decoder-only
+    transformer built by MO Intelligence. Currently under active development at the
+    100M-parameter scale (R0).</p>
+    <p><a href="/docs/moi/architecture">Architecture</a> ·
+    <a href="/docs/moi/training">Training</a> ·
+    <a href="/docs/moi/scaling">Scaling</a> ·
+    <a href="/docs/moi/roadmap">Roadmap</a></p>
+  </article>`;
+
+const moiArchitecturePage = `
+  <article>
+    <h1>MOI AI Architecture — MO Intelligence R&amp;D Docs</h1>
+    <p>Dense decoder-only transformer with RMSNorm, RoPE, GQA attention, SwiGLU
+    feed-forward, and tied embeddings. R0: 100M params, d_model=768, 12 layers.</p>
+    <p><a href="/docs/moi">Back to overview</a></p>
+  </article>`;
+
+const moiTrainingPage = `
+  <article>
+    <h1>MOI AI Training — MO Intelligence R&amp;D Docs</h1>
+    <p>Install, smoke test, train R0 on TinyStories, CPU mini verification, and supervised fine-tuning.</p>
+    <p><a href="/docs/moi">Back to overview</a></p>
+  </article>`;
+
+const moiScalingPage = `
+  <article>
+    <h1>MOI AI Scaling — MO Intelligence R&amp;D Docs</h1>
+    <p>Scaling ladder from R0 (100M) to R4 (50B). Shape rules, locked-in decisions, and training safety.</p>
+    <p><a href="/docs/moi">Back to overview</a></p>
+  </article>`;
+
+const moiRoadmapPage = `
+  <article>
+    <h1>MOI AI Roadmap — MO Intelligence R&amp;D Docs</h1>
+    <p>Development stages from R0 research on Apple Silicon through R4 production-scale deployment.</p>
+    <p><a href="/docs/moi">Back to overview</a></p>
+  </article>`;
+
 /* ── routes ──────────────────────────────────────────────────────── */
 const routes = [
   {
@@ -272,7 +317,7 @@ const routes = [
     out: 'docs/index.html',
     path: '/docs',
     title: 'Documentation — MO Intelligence',
-    description: 'Product documentation for MO Intelligence solutions. Explore Call Center, a web-based contact management platform.',
+    description: 'Product documentation for MO Intelligence solutions. Explore Call Center and MOI AI research & development.',
     body: docsHubPage,
   },
   {
@@ -309,6 +354,41 @@ const routes = [
     title: 'Get Started with Call Center — MO Intelligence Docs',
     description: 'Book a guided walkthrough and get a tailored quotation for Call Center based on your team size.',
     body: callCenterGetStartedPage,
+  },
+  {
+    out: 'docs/moi/index.html',
+    path: '/docs/moi',
+    title: 'MOI AI Overview — MO Intelligence R&D Docs',
+    description: 'MOI AI is Mauritius Own LLM — a from-scratch decoder-only transformer built by MO Intelligence, currently under development at 100M parameters.',
+    body: moiOverviewPage,
+  },
+  {
+    out: 'docs/moi/architecture/index.html',
+    path: '/docs/moi/architecture',
+    title: 'MOI AI Architecture — MO Intelligence R&D Docs',
+    description: 'MOI AI architecture: RMSNorm, RoPE, GQA, SwiGLU, tied embeddings. R0 100M config with d_model=768, 12 layers, 12/4 heads.',
+    body: moiArchitecturePage,
+  },
+  {
+    out: 'docs/moi/training/index.html',
+    path: '/docs/moi/training',
+    title: 'MOI AI Training — MO Intelligence R&D Docs',
+    description: 'Train MOI AI R0: install, smoke test, TinyStories pretraining on Apple Silicon, CPU verification, and supervised fine-tuning.',
+    body: moiTrainingPage,
+  },
+  {
+    out: 'docs/moi/scaling/index.html',
+    path: '/docs/moi/scaling',
+    title: 'MOI AI Scaling — MO Intelligence R&D Docs',
+    description: 'MOI AI scaling ladder from R0 (100M) to R4 (50B). Shape rules, locked-in decisions, repo layout, and training safety.',
+    body: moiScalingPage,
+  },
+  {
+    out: 'docs/moi/roadmap/index.html',
+    path: '/docs/moi/roadmap',
+    title: 'MOI AI Roadmap — MO Intelligence R&D Docs',
+    description: 'MOI AI development roadmap from R0 research on Apple Silicon to R4 production-scale deployment.',
+    body: moiRoadmapPage,
   },
 ];
 

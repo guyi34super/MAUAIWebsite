@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Mail, ExternalLink } from 'lucide-react';
 import useSEO from '../../hooks/useSEO';
 import DocsArticle from '../../components/docs/DocsArticle';
-import { callCenterNav, getStartedContent, docsSeo } from '../../content/docs/callCenter';
+import { callCenterNav, getStartedContent, docsSeo, getCallCenterPrevNext, getCallCenterPagePath } from '../../content/docs/callCenter';
 
 export default function CallCenterGetStarted() {
   useSEO({
@@ -24,6 +24,8 @@ export default function CallCenterGetStarted() {
       description="Book a guided walkthrough and receive a tailored quotation."
       toc={getStartedContent.toc}
       pageSlug="get-started"
+      getPrevNext={getCallCenterPrevNext}
+      getPagePath={getCallCenterPagePath}
     >
       <section id="contact">
         <h2>Contact us</h2>
