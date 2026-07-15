@@ -6,9 +6,9 @@ export const BRAND = {
   email: 'team.mau.ai@gmail.com',
   defaultTitle: 'MO Intelligence — #1 AI Solutions Company in Mauritius & Africa',
   defaultDescription:
-    "MO Intelligence is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites and AI voice systems for businesses across Mauritius and Africa. Book a free consultation today.",
+    "MO Intelligence is Mauritius's leading AI solutions company. We build AI chatbots, AI receptionists, custom AI automation, AI websites, AI voice systems, SEO, AI SEO, and Research and Development for businesses across Mauritius and Africa. Book a free consultation today.",
   keywords:
-    'MO Intelligence, AI Mauritius, AI Africa, artificial intelligence Mauritius, AI company Mauritius, AI chatbot Mauritius, AI automation Africa, AI solutions Africa, best AI company Mauritius',
+    'MO Intelligence, AI Mauritius, AI Africa, artificial intelligence Mauritius, AI company Mauritius, AI chatbot Mauritius, AI automation Africa, AI solutions Africa, best AI company Mauritius, SEO Mauritius, SEO services Mauritius, AI SEO, AI Engine Optimization, AIEO, Research and Development, AI R&D Mauritius',
   logo: {
     line1: 'MO',
     line2Bold: 'intelligence',

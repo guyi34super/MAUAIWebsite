@@ -13,6 +13,9 @@ const SERVICES = [
   'AI Website Development',
   'AI Marketing',
   'AI Voice Interfaces',
+  'SEO',
+  'AI SEO',
+  'Research and Development',
   'Not sure yet — need advice',
 ];
 
@@ -76,8 +79,8 @@ const EMAIL_PROVIDERS = [
 export default function Contact() {
   useSEO({
     title: 'Contact MO Intelligence — Book a Free AI Consultation in Mauritius',
-    description: 'Get in touch with MO Intelligence — Mauritius\'s leading AI solutions company. Book a free consultation to discover how AI can transform your business in Mauritius or Africa.',
-    keywords: 'contact MO Intelligence, AI consultation Mauritius, book AI demo Africa, AI solutions Mauritius contact, free AI consultation',
+    description: 'Get in touch with MO Intelligence — Mauritius\'s leading AI solutions company. Book a free consultation for AI, SEO, AI SEO, or Research and Development services in Mauritius or Africa.',
+    keywords: 'contact MO Intelligence, AI consultation Mauritius, book AI demo Africa, AI solutions Mauritius contact, free AI consultation, SEO Mauritius, AI SEO consultation, Research and Development Mauritius',
     url: 'https://moi-ai.dev/contact',
   });
 

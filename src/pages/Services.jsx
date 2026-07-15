@@ -9,8 +9,8 @@ import { SERVICES_DETAILED, PROCESS } from '../content/marketing';
 export default function Services() {
   useSEO({
     title: 'AI Services in Mauritius & Africa — MO Intelligence',
-    description: 'Explore MO Intelligence\'s full range of AI services: AI chatbots, AI virtual receptionists, custom AI automation, AI website development, AI marketing, and AI voice interfaces for businesses in Mauritius and Africa.',
-    keywords: 'AI chatbot Mauritius, AI receptionist Africa, AI automation Mauritius, custom AI solutions Africa, AI website Mauritius, AI marketing Africa, AI voice Mauritius, MO Intelligence services',
+    description: 'Explore MO Intelligence\'s full range of AI services: AI chatbots, AI virtual receptionists, custom AI automation, AI website development, AI marketing, AI voice interfaces, SEO, AI SEO, and Research and Development for businesses in Mauritius and Africa.',
+    keywords: 'AI chatbot Mauritius, AI receptionist Africa, AI automation Mauritius, custom AI solutions Africa, AI website Mauritius, AI marketing Africa, AI voice Mauritius, MO Intelligence services, SEO Mauritius, AI SEO, AI Engine Optimization, Research and Development Mauritius',
     url: 'https://moi-ai.dev/services',
   });
 

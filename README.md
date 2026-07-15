@@ -43,7 +43,23 @@ MO Intelligence offers six core service categories, all detailed on `/services`:
 | AI Marketing | Content, segmentation, campaigns, and ROI optimisation |
 | AI Voice Interfaces | Phone and IVR voice assistants in multiple languages |
 
-**Industries served:** healthcare, hospitality, real estate, professional services, education, e-commerce, and finance — across Mauritius, the Indian Ocean, and Africa.
+**Additional capability areas** (indexed in SEO metadata, structured data, and `llms.txt` — not shown as service cards on `/services`):
+
+| Capability | Summary |
+| --- | --- |
+| SEO | Search engine optimization — technical SEO, on-page optimization, local search visibility |
+| AI SEO | AI Engine Optimization (AIEO) — LLM and AI search crawler discoverability |
+| Research and Development | AI R&D — solution prototyping, emerging tech evaluation, innovation partnerships |
+
+## SEO and AI discoverability
+
+The site is optimized for both traditional search engines and AI crawlers:
+
+- **SEO** keywords and meta descriptions across `index.html`, per-page `useSEO`, and prerendered HTML
+- **AI SEO** via `llms.txt`, build-time prerendering, JSON-LD structured data, and explicit AI crawler permissions in `robots.txt`
+- **Research and Development** referenced in schema.org `hasOfferCatalog`, FAQs, and `llms.txt`
+- Submit `https://moi-ai.dev/sitemap.xml` in Google Search Console (property must match `moi-ai.dev`, not `mau-ai.com`)
+ healthcare, hospitality, real estate, professional services, education, e-commerce, and finance — across Mauritius, the Indian Ocean, and Africa.
 
 ## Call Center product
 
