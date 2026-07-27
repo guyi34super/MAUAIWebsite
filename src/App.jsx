@@ -18,6 +18,7 @@ import MoiTraining from './pages/docs/MoiTraining';
 import MoiScaling from './pages/docs/MoiScaling';
 import MoiRoadmap from './pages/docs/MoiRoadmap';
 import CookieNotice from './components/CookieNotice';
+import ChatWidget from './components/chat/ChatWidget';
 import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
@@ -58,6 +59,7 @@ export default function App() {
           </Route>
         </Routes>
         <CookieNotice />
+        <ChatWidget />
       </BrowserRouter>
     </>
   );

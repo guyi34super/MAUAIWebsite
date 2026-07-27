@@ -13,6 +13,7 @@ Marketing site and product documentation for [MO Intelligence](https://moi-ai.de
 - `/services` — six AI service categories with detailed feature lists
 - `/contact` — inquiry form that opens a pre-filled draft in the visitor's email app
 - `/privacy` — privacy policy and cookie notice (no tracking cookies)
+- **Site chatbot** — floating widget on every page; messages proxy through `/api/chat/messages` to the Call Center bot API
 
 ### Product docs
 - `/docs` — documentation hub
@@ -122,7 +123,16 @@ Copy [`.env.example`](.env.example) to `.env.local`:
 
 ```
 VITE_CONTACT_EMAIL=team.mau.ai@gmail.com
+
+# Chatbot (server-side only — never prefix with VITE_)
+CHATBOT_API_KEY=your_api_key_here
+CHATBOT_API_BASE_URL=https://mau-call-center.onrender.com
+CHATBOT_AGENT_ID=agent_2102692c-a4b6-4c98-9280-0490719442b7
 ```
+
+The chatbot widget calls same-origin `/api/chat/messages`. In production, the Vercel serverless function in `api/chat/messages.js` adds the Bearer token and forwards to the Call Center backend. In local dev, Vite proxies the same path using the env vars above.
+
+**Call Center agent prompt:** Copy `SYSTEM_PROMPT` from [`src/content/chatbot.js`](src/content/chatbot.js) into the agent system prompt in the Call Center admin UI (`call-center-phi.vercel.app`). The widget sends `"hi"` in the background on page load to trigger the opening menu.
 
 ## Contact form
 
@@ -136,6 +146,15 @@ No backend or third-party API. After submitting the form on `/contact`, visitors
 | Install Command | `npm install` |
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
+
+Set these **Environment Variables** in the Vercel project dashboard (Settings → Environment Variables):
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `CHATBOT_API_KEY` | Yes (for chatbot) | Bearer token for the Call Center bot API |
+| `CHATBOT_API_BASE_URL` | No | Defaults to `https://mau-call-center.onrender.com` |
+| `CHATBOT_AGENT_ID` | No | Defaults to `agent_2102692c-a4b6-4c98-9280-0490719442b7` |
+| `VITE_CONTACT_EMAIL` | No | Contact form recipient override |
 
 [`vercel.json`](vercel.json) configures:
 
@@ -162,6 +181,8 @@ Vercel checks the **Git commit author** against linked team members. If a deploy
 public/
   favicon.png, logo-mu.png, og-image.png, apple-touch-icon.png
   manifest.json, sitemap.xml, robots.txt, llms.txt
+api/
+  chat/messages.js           # Vercel serverless proxy for chatbot API
 scripts/
   prerender.mjs              # Static HTML for all routes at build time
 src/
@@ -169,6 +190,7 @@ src/
     layout/                  # SiteHeader, SiteFooter, SiteShell, AppLayout
     marketing/               # PageHero, SectionBlock, FeatureGrid, FaqList, CtaBand
     docs/                    # DocsSidebar, DocsArticle, DocsBreadcrumb, etc.
+    chat/                    # ChatWidget, ChatPanel, ChatMessage
     Robot3D.jsx              # Three.js robot mascot
     Robot3DLazy.jsx          # Lazy-loaded 3D hero wrapper
     CookieNotice.jsx, LoadingScreen.jsx, ErrorBoundary.jsx
@@ -176,12 +198,15 @@ src/
   content/
     marketing.js             # Services, team, FAQs, industries
     docs/callCenter.js       # Call Center documentation content
+    chatbot.js               # Chat widget config and SYSTEM_PROMPT for Call Center
   hooks/useSEO.js            # Per-page title, description, canonical URL
+  hooks/useChat.js           # Chatbot conversation state
+  lib/chatApi.js, chatUtils.js
   pages/                     # Home, Services, Contact, Privacy, docs/*
   App.jsx                    # Routes and loading screen
   main.jsx                   # Entry point
 vercel.json                  # Routing, security headers, cache rules
-vite.config.js               # Dev server (5173) and preview (4173)
+vite.config.js               # Dev server (5173), chat API proxy, preview (4173)
 ```
 
 ## Key dependencies
