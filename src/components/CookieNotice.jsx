@@ -21,6 +21,7 @@ export default function CookieNotice() {
       // localStorage unavailable
     }
     setVisible(false);
+    window.dispatchEvent(new CustomEvent('mauai-cookie-dismissed'));
   };
 
   if (!visible) return null;
