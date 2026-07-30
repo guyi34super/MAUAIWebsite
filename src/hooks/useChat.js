@@ -4,10 +4,16 @@ import { fetchMessages, sendMessage as sendMessageApi } from '../lib/chatApi';
 import {
   createConversationId,
   dedupeMessages,
+  getAutoRestoreOptions,
   getLatestOptions,
   hasSubstantiveBotReplyAfterUser,
+  isFollowUpSelection,
+  isFollowUpOptionSet,
+  isServiceSelection,
   isWelcomeMenuText,
+  isWelcomeOptionSet,
   mapApiMessage,
+  resolveRestoredOptions,
   sanitizeMessageText,
   shouldHideAutoGreeting,
   shouldReshowMenu,
@@ -68,9 +74,33 @@ function keepLatestBotReplyPerTurn(messages) {
   return result;
 }
 
+function getLastBotTextFromData(data) {
+  const messages = (data.messages || []).map(mapApiMessage);
+  const sorted = [...messages].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
+  const lastUserIndex = sorted.findLastIndex((m) => m.role === 'user');
+  const botsAfterUser = sorted.slice(lastUserIndex + 1).filter((m) => m.role === 'bot');
+  const lastBot = botsAfterUser[botsAfterUser.length - 1];
+  if (!lastBot || isWelcomeMenuText(lastBot.rawText ?? lastBot.text)) return '';
+  return lastBot.text || '';
+}
+
+function mapApiOptions(options) {
+  if (!options?.length) return [];
+  return options.map((opt) => {
+    if (typeof opt === 'string') return { label: opt, value: opt };
+    return {
+      label: opt.label || opt.text || String(opt.payload || opt.id || ''),
+      value: opt.value || opt.payload || opt.label || opt.text || String(opt.id || ''),
+    };
+  });
+}
+
 export default function useChat() {
   const conversationIdRef = useRef(createConversationId());
   const greetingStartedRef = useRef(false);
+  const conversationPhaseRef = useRef('welcome');
 
   const [messages, setMessages] = useState([]);
   const [options, setOptions] = useState(WELCOME_OPTIONS);
@@ -101,9 +131,6 @@ export default function useChat() {
     if (updateOptions && (nextOptions.length > 0 || allowMenuOptions)) {
       setOptions(nextOptions);
     }
-    // #region agent log
-    fetch('http://127.0.0.1:7319/ingest/9cf5b0d0-ec9f-4af0-a2fe-3a0c4030f0df',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'22586a'},body:JSON.stringify({sessionId:'22586a',location:'useChat.js:applyThread',message:'thread applied',data:{updateOptions,optionCount:nextOptions.length,optionLabels:nextOptions.map(o=>o.label||o).slice(0,4),rawMsgCount:(data.messages||[]).length},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     return nextOptions;
   }, []);
 
@@ -111,24 +138,31 @@ export default function useChat() {
     async (delays, { waitForReplyAfterUser = false, allowMenuOptions = false } = {}) => {
       const conversationId = conversationIdRef.current;
       let finalOptions = [];
+      let lastData = null;
       for (let attempt = 0; attempt <= delays.length; attempt += 1) {
         if (attempt > 0) await sleep(delays[attempt - 1]);
         const data = await fetchMessages(conversationId);
+        lastData = data;
         const deferOptions = waitForReplyAfterUser && attempt < delays.length;
         finalOptions = applyThread(data, { allowMenuOptions, updateOptions: !deferOptions }) || finalOptions;
         const done = waitForReplyAfterUser ? hasBotReplyAfterUser(data) : false;
         if (done) {
           if (finalOptions.length) setOptions(finalOptions);
-          // #region agent log
-          fetch('http://127.0.0.1:7319/ingest/9cf5b0d0-ec9f-4af0-a2fe-3a0c4030f0df',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'22586a'},body:JSON.stringify({sessionId:'22586a',location:'useChat.js:pollThread',message:'poll done',data:{attempt,optionCount:finalOptions.length},timestamp:Date.now(),hypothesisId:'A',runId:'post-fix'})}).catch(()=>{});
-          // #endregion
-          return true;
+          return {
+            gotReply: true,
+            lastBotText: getLastBotTextFromData(data),
+            apiOptions: finalOptions,
+          };
         }
       }
       if (waitForReplyAfterUser && finalOptions.length) {
         setOptions(finalOptions);
       }
-      return false;
+      return {
+        gotReply: false,
+        lastBotText: lastData ? getLastBotTextFromData(lastData) : '',
+        apiOptions: finalOptions,
+      };
     },
     [applyThread]
   );
@@ -160,6 +194,14 @@ export default function useChat() {
       const conversationId = conversationIdRef.current;
       const optimisticId = `pending-${Date.now()}`;
 
+      if (isServiceSelection(text)) {
+        conversationPhaseRef.current = 'service_selected';
+      } else if (isFollowUpSelection(text)) {
+        conversationPhaseRef.current = 'in_conversation';
+      } else if (conversationPhaseRef.current === 'service_selected') {
+        conversationPhaseRef.current = 'in_conversation';
+      }
+
       setMessages((prev) => [
         ...prev,
         { id: optimisticId, role: 'user', text, createdAt: new Date().toISOString(), options: [] },
@@ -169,9 +211,13 @@ export default function useChat() {
       setSyncing(true);
       setError(null);
 
+      let postApiOptions = [];
+      let postReplyText = '';
+
       try {
         const postData = await sendMessageApi(conversationId, text);
         if (postData.reply && !isWelcomeMenuText(postData.reply)) {
+          postReplyText = postData.reply;
           setMessages((prev) => {
             const withoutPending = prev.filter((m) => m.id !== optimisticId);
             const mapped = mapApiMessage({
@@ -186,20 +232,44 @@ export default function useChat() {
             );
           });
           if (postData.options?.length) {
-            const mappedOptions = postData.options.map((opt) =>
-              typeof opt === 'string' ? { label: opt, value: opt } : opt
-            );
-            setOptions(mappedOptions);
-            // #region agent log
-            fetch('http://127.0.0.1:7319/ingest/9cf5b0d0-ec9f-4af0-a2fe-3a0c4030f0df',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'22586a'},body:JSON.stringify({sessionId:'22586a',location:'useChat.js:sendMessage',message:'post options set',data:{count:mappedOptions.length,labels:mappedOptions.map(o=>o.label||o)},timestamp:Date.now(),hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
+            postApiOptions = mapApiOptions(postData.options);
+            setOptions(postApiOptions);
+            conversationPhaseRef.current = 'service_selected';
           }
         }
 
-        const gotReply = await pollThread(BOOTSTRAP_POLLS_MS, { waitForReplyAfterUser: true });
-        if (shouldReshowMenu(text)) {
-          setOptions(WELCOME_OPTIONS);
+        const { gotReply, lastBotText: polledBotText, apiOptions } = await pollThread(
+          BOOTSTRAP_POLLS_MS,
+          { waitForReplyAfterUser: true }
+        );
+
+        const lastBotText = polledBotText || postReplyText;
+        const effectiveApiOptions = mapApiOptions(
+          apiOptions.length ? apiOptions : postApiOptions
+        );
+
+        let finalOptions = [];
+
+        if (isFollowUpSelection(text)) {
+          finalOptions = WELCOME_OPTIONS;
+        } else if (effectiveApiOptions.length && isServiceSelection(text)) {
+          finalOptions = effectiveApiOptions;
+        } else if (effectiveApiOptions.length && !isFollowUpOptionSet(effectiveApiOptions)) {
+          finalOptions = effectiveApiOptions;
+        } else if (shouldReshowMenu(text, lastBotText)) {
+          finalOptions = resolveRestoredOptions(text, lastBotText) || [];
+        } else {
+          finalOptions =
+            getAutoRestoreOptions(text, lastBotText, conversationPhaseRef.current) || [];
         }
+
+        if (finalOptions.length) {
+          setOptions(finalOptions);
+          conversationPhaseRef.current = isWelcomeOptionSet(finalOptions)
+            ? 'welcome'
+            : 'service_selected';
+        }
+
         if (!gotReply) {
           setError('Still waiting for a reply. Please try again in a moment.');
         }
