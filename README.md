@@ -119,7 +119,10 @@ After changing routes or page titles, update `scripts/prerender.mjs` so the buil
 
 ## Environment variables
 
-Copy [`.env.example`](.env.example) to `.env.local`:
+**Download template:** [env.local.template](public/env.local.template) — save as `.env.local` in the project root, then fill in your values.  
+(Also available at `/env.local.template` when the site is running.)
+
+Or copy [`.env.example`](.env.example) to `.env.local`:
 
 ```
 VITE_CONTACT_EMAIL=team.mau.ai@gmail.com

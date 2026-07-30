@@ -225,9 +225,125 @@ export function linkifyMessageText(text) {
   return parts.length ? parts : [{ type: 'text', value: text }];
 }
 
+export const FOLLOW_UP_OPTIONS = [
+  { label: 'Book / order', value: 'Book / order' },
+  { label: 'More information', value: 'More information' },
+];
+
 const RESHOW_MENU_RE =
   /\b(other services|what else|show menu|see menu|list services|all services|more services|what do you offer|what services|menu options|back to menu|different service|another service)\b/i;
 
-export function shouldReshowMenu(text) {
-  return RESHOW_MENU_RE.test(String(text).trim());
+const AFFIRMATIVE_RE = /^(yes|yeah|yep|yup|sure|ok|okay|please|y)$/i;
+
+const OTHER_SERVICES_RE =
+  /\b(anything else|other services|another service|explore other|see our services|pick another|different service|what else|our other services|explore our other)\b/i;
+
+const BOOK_OR_MORE_RE =
+  /\b(book a consultation|book a free consultation|more information|tell you more|like to book|free consultation|get more information|book or order)\b/i;
+
+export function isAffirmative(text) {
+  return AFFIRMATIVE_RE.test(String(text).trim());
+}
+
+export function botAskedForOtherServices(text) {
+  return OTHER_SERVICES_RE.test(String(text).trim());
+}
+
+export function botAskedToBookOrLearnMore(text) {
+  return BOOK_OR_MORE_RE.test(String(text).trim());
+}
+
+export function getOptionsForAffirmative(lastBotText) {
+  if (!lastBotText) return null;
+  if (botAskedForOtherServices(lastBotText)) return WELCOME_OPTIONS;
+  if (botAskedToBookOrLearnMore(lastBotText)) return FOLLOW_UP_OPTIONS;
+  return null;
+}
+
+export function resolveRestoredOptions(userText, lastBotText) {
+  const text = String(userText).trim();
+  if (RESHOW_MENU_RE.test(text)) return WELCOME_OPTIONS;
+  return getOptionsForAffirmative(lastBotText);
+}
+
+export function isServiceSelection(text) {
+  const value = String(text).trim();
+  if (/^[1-6]$/.test(value)) return true;
+  return WELCOME_OPTIONS.some(
+    (opt) => opt.value === value || opt.label.toLowerCase().includes(value.toLowerCase())
+  );
+}
+
+export function isFollowUpSelection(text) {
+  const value = String(text).trim().toLowerCase();
+  return FOLLOW_UP_OPTIONS.some(
+    (opt) => opt.value.toLowerCase() === value || opt.label.toLowerCase() === value
+  );
+}
+
+export function isWelcomeOptionSet(options) {
+  return (
+    options?.length === WELCOME_OPTIONS.length &&
+    options[0]?.value === WELCOME_OPTIONS[0]?.value
+  );
+}
+
+export function isFollowUpOptionSet(options) {
+  if (!options?.length || options.length !== FOLLOW_UP_OPTIONS.length) return false;
+  return options.every((opt, i) => {
+    const label = (opt.label || opt.value || '').toLowerCase();
+    return label === FOLLOW_UP_OPTIONS[i].label.toLowerCase();
+  });
+}
+
+export function shouldReshowMenu(userText, lastBotText) {
+  const text = String(userText).trim();
+  if (RESHOW_MENU_RE.test(text)) return true;
+  if (isAffirmative(text) && getOptionsForAffirmative(lastBotText)) return true;
+  return false;
+}
+
+export function botTurnCompleteForMenuRestore(text) {
+  const lower = String(text).trim().toLowerCase();
+  if (!lower) return false;
+  return (
+    botAskedForOtherServices(text) ||
+    /moi-ai\.dev\/contact/.test(lower) ||
+    /\bbook here\b/.test(lower) ||
+    /\b(pricing depends|project scope)\b/.test(lower)
+  );
+}
+
+/** @deprecated Use botTurnCompleteForMenuRestore for menu restore decisions. */
+export function botCompletedServiceTurn(text) {
+  return botTurnCompleteForMenuRestore(text);
+}
+
+/** Proactively restore options to keep the conversation loop going. */
+export function getAutoRestoreOptions(userText, lastBotText, phase) {
+  const followUp = isFollowUpSelection(userText);
+
+  if (followUp) {
+    return WELCOME_OPTIONS;
+  }
+
+  if (!lastBotText) return null;
+
+  const inServiceFlow =
+    isServiceSelection(userText) || phase === 'service_selected' || phase === 'in_conversation';
+
+  if (inServiceFlow) {
+    if (botTurnCompleteForMenuRestore(lastBotText)) {
+      return WELCOME_OPTIONS;
+    }
+    // After Q&A (not a fresh service pick), loop back to the service menu
+    if (phase === 'in_conversation') {
+      return WELCOME_OPTIONS;
+    }
+    if (isServiceSelection(userText) || botAskedToBookOrLearnMore(lastBotText)) {
+      return FOLLOW_UP_OPTIONS;
+    }
+  }
+
+  return null;
 }

@@ -3,4 +3,5 @@ dist/
 .env
 .env.local
 .vercel
-.env*
+.env.*
+!.env.example
