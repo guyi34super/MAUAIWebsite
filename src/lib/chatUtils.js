@@ -1,5 +1,6 @@
 import {
   AUTO_GREETING,
+  CHAT_SERVICES,
   WELCOME_OPTIONS,
 } from '../content/chatbot.js';
 
@@ -41,6 +42,11 @@ export function cleanBotText(text) {
   if (!text) return '';
   return String(text)
     .replace(INTERNAL_MARKER_RE, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*\n]+)\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\*\*/g, '')
     .replace(/\r\n/g, '\n')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
@@ -48,6 +54,56 @@ export function cleanBotText(text) {
     .map((line) => line.replace(/\s{2,}/g, ' ').trim())
     .join('\n')
     .trim();
+}
+
+/** Remove booking CTAs, pricing, and upsell questions from the first service intro reply. */
+export function stripInitialServiceBooking(text) {
+  if (!text) return '';
+  return cleanBotText(
+    String(text)
+      .replace(/\s*Want a free consultation\??\s*/gi, ' ')
+      .replace(/\s*Would you like to book a consultation or get more information\??\s*/gi, ' ')
+      .replace(/\s*Book here:?\s*/gi, ' ')
+      .replace(/\s*Book a free consultation[^.!\n]*[.!]?\s*/gi, ' ')
+      .replace(/https?:\/\/[^\s]*\/contact[^\s]*/gi, '')
+      .replace(/mailto:[^\s]+/gi, '')
+      .replace(/\n\s*(?:\*\*)?Pricing(?:\*\*)?\s*:\s*[^\n]*/gi, '')
+      .replace(/\n\s*(?:\*\*)?Price(?:\*\*)?\s*:\s*[^\n]*/gi, '')
+      .replace(/\s*(?:\*\*)?Price(?:\*\*)?\s*:\s*[^\n]*/gi, '')
+      .replace(/\n[^\n]*\b(as from|from)\s+mur\b[^\n]*/gi, '')
+      .replace(
+        /\s*Do you want to know more about this service[^.?\n]*[.?]?\s*/gi,
+        ' '
+      )
+      .replace(/\s*would you like to proceed with pricing\??\s*/gi, ' ')
+      .replace(/\s*Do you want to choose another option\??\s*/gi, ' ')
+      .replace(/\s+([.!])/g, '$1')
+  );
+}
+
+export function sanitizeServiceIntroMessages(messages) {
+  if (!messages?.length) return messages;
+  const sorted = [...messages].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
+  const lastUserIdx = sorted.findLastIndex((m) => m.role === 'user');
+  if (lastUserIdx === -1) return messages;
+
+  const lastUser = sorted[lastUserIdx];
+  if (!isServiceSelection(lastUser.text) || isFollowUpSelection(lastUser.text)) {
+    return messages;
+  }
+
+  const botsAfter = sorted.slice(lastUserIdx + 1).filter((m) => m.role === 'bot');
+  const introBot = botsAfter[0];
+  if (!introBot) return messages;
+
+  const stripped = stripInitialServiceBooking(introBot.text);
+  if (stripped === introBot.text) return messages;
+
+  return messages.map((m) =>
+    m.id === introBot.id ? { ...m, text: stripped, rawText: stripped } : m
+  );
 }
 
 export function parseBotMessage(text) {
@@ -227,7 +283,24 @@ export function linkifyMessageText(text) {
 
 export const FOLLOW_UP_OPTIONS = [
   { label: 'Book / order', value: 'Book / order' },
+  { label: 'Price', value: 'Price' },
   { label: 'More information', value: 'More information' },
+];
+
+export const BOOK_ORDER_OPTIONS = [
+  { label: 'Price', value: 'Price' },
+  { label: 'More information', value: 'More information' },
+];
+
+export const BOOK_ORDER_PROMPT = 'What would you like to know?';
+
+export const LOOP_QUESTION_TEXT = 'Do you want to choose another option?';
+
+export const LOOP_GOODBYE_TEXT = 'Thank you from the team and see you later!';
+
+export const LOOP_DECISION_OPTIONS = [
+  { label: 'Yes', value: 'Yes' },
+  { label: 'No', value: 'No' },
 ];
 
 const RESHOW_MENU_RE =
@@ -235,8 +308,13 @@ const RESHOW_MENU_RE =
 
 const AFFIRMATIVE_RE = /^(yes|yeah|yep|yup|sure|ok|okay|please|y)$/i;
 
+const NEGATIVE_RE = /^(no|nope|nah|not really|no thanks|no thank you)$/i;
+
 const OTHER_SERVICES_RE =
   /\b(anything else|other services|another service|explore other|see our services|pick another|different service|what else|our other services|explore our other)\b/i;
+
+const CHOOSE_ANOTHER_OPTION_RE =
+  /\b(choose another option|would you like to choose another|want to choose another|pick another option|select another service|explore another service)\b/i;
 
 const BOOK_OR_MORE_RE =
   /\b(book a consultation|book a free consultation|more information|tell you more|like to book|free consultation|get more information|book or order)\b/i;
@@ -245,8 +323,28 @@ export function isAffirmative(text) {
   return AFFIRMATIVE_RE.test(String(text).trim());
 }
 
+export function isNegative(text) {
+  return NEGATIVE_RE.test(String(text).trim());
+}
+
 export function botAskedForOtherServices(text) {
   return OTHER_SERVICES_RE.test(String(text).trim());
+}
+
+export function botAskedToChooseAnotherOption(text) {
+  return CHOOSE_ANOTHER_OPTION_RE.test(String(text).trim());
+}
+
+/** Bot finished a service turn but did not ask the gated loop question yet. */
+export function botTurnNeedsLoopQuestion(text, phase) {
+  if (!text || botAskedToChooseAnotherOption(text)) return false;
+  if (phase !== 'in_conversation') return false;
+  const lower = String(text).trim().toLowerCase();
+  return (
+    /moi-ai\.dev\/contact/.test(lower) ||
+    /\bbook here\b/.test(lower) ||
+    /\bhow can i assist you further\b/.test(lower)
+  );
 }
 
 export function botAskedToBookOrLearnMore(text) {
@@ -255,6 +353,7 @@ export function botAskedToBookOrLearnMore(text) {
 
 export function getOptionsForAffirmative(lastBotText) {
   if (!lastBotText) return null;
+  if (botAskedToChooseAnotherOption(lastBotText)) return WELCOME_OPTIONS;
   if (botAskedForOtherServices(lastBotText)) return WELCOME_OPTIONS;
   if (botAskedToBookOrLearnMore(lastBotText)) return FOLLOW_UP_OPTIONS;
   return null;
@@ -266,12 +365,74 @@ export function resolveRestoredOptions(userText, lastBotText) {
   return getOptionsForAffirmative(lastBotText);
 }
 
-export function isServiceSelection(text) {
+export function normalizeServiceSelection(text) {
   const value = String(text).trim();
-  if (/^[1-6]$/.test(value)) return true;
-  return WELCOME_OPTIONS.some(
-    (opt) => opt.value === value || opt.label.toLowerCase().includes(value.toLowerCase())
+  if (/^[1-6]$/.test(value)) {
+    const opt = WELCOME_OPTIONS[parseInt(value, 10) - 1];
+    return opt?.value ?? value;
+  }
+  const lower = value.toLowerCase();
+  const match = WELCOME_OPTIONS.find(
+    (opt) =>
+      opt.value.toLowerCase() === lower ||
+      opt.label.toLowerCase() === lower ||
+      opt.label.toLowerCase().includes(lower) ||
+      lower.includes(opt.label.toLowerCase())
   );
+  return match?.value ?? value;
+}
+
+export function isServiceSelection(text) {
+  const normalized = normalizeServiceSelection(text);
+  return WELCOME_OPTIONS.some((opt) => opt.value === normalized);
+}
+
+export function isPricingQuestion(text) {
+  return /\b(price|pricing|cost|how much|fee|fees|expensive|budget|quote|rate|rates)\b/i.test(
+    String(text).trim()
+  );
+}
+
+export function getLastSelectedServiceTitle(messages) {
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    const message = messages[i];
+    if (message.role === 'user' && isServiceSelection(message.text)) {
+      return normalizeServiceSelection(message.text);
+    }
+  }
+  return null;
+}
+
+export function getPostPriceOptions() {
+  return FOLLOW_UP_OPTIONS.filter((opt) => opt.value !== 'Price');
+}
+
+export function isBookOrderSelection(text) {
+  return String(text).trim().toLowerCase() === 'book / order';
+}
+
+export function isBookOrderSubSelection(text) {
+  const value = String(text).trim().toLowerCase();
+  return BOOK_ORDER_OPTIONS.some(
+    (opt) => opt.value.toLowerCase() === value || opt.label.toLowerCase() === value
+  );
+}
+
+export function isPriceSelection(text) {
+  const value = String(text).trim().toLowerCase();
+  return value === 'price' || isPricingQuestion(text);
+}
+
+export function isExactPriceButton(text) {
+  return String(text).trim().toLowerCase() === 'price';
+}
+
+export function isBookOrderOptionSet(options) {
+  if (!options?.length || options.length !== BOOK_ORDER_OPTIONS.length) return false;
+  return options.every((opt, i) => {
+    const label = (opt.label || opt.value || '').toLowerCase();
+    return label === BOOK_ORDER_OPTIONS[i].label.toLowerCase();
+  });
 }
 
 export function isFollowUpSelection(text) {
@@ -279,6 +440,21 @@ export function isFollowUpSelection(text) {
   return FOLLOW_UP_OPTIONS.some(
     (opt) => opt.value.toLowerCase() === value || opt.label.toLowerCase() === value
   );
+}
+
+export function isLoopDecisionSelection(text) {
+  const value = String(text).trim().toLowerCase();
+  return LOOP_DECISION_OPTIONS.some(
+    (opt) => opt.value.toLowerCase() === value || opt.label.toLowerCase() === value
+  );
+}
+
+export function isLoopOptionSet(options) {
+  if (!options?.length || options.length !== LOOP_DECISION_OPTIONS.length) return false;
+  return options.every((opt, i) => {
+    const label = (opt.label || opt.value || '').toLowerCase();
+    return label === LOOP_DECISION_OPTIONS[i].label.toLowerCase();
+  });
 }
 
 export function isWelcomeOptionSet(options) {
@@ -307,10 +483,10 @@ export function botTurnCompleteForMenuRestore(text) {
   const lower = String(text).trim().toLowerCase();
   if (!lower) return false;
   return (
+    botAskedToChooseAnotherOption(text) ||
     botAskedForOtherServices(text) ||
     /moi-ai\.dev\/contact/.test(lower) ||
-    /\bbook here\b/.test(lower) ||
-    /\b(pricing depends|project scope)\b/.test(lower)
+    /\bbook here\b/.test(lower)
   );
 }
 
@@ -321,27 +497,28 @@ export function botCompletedServiceTurn(text) {
 
 /** Proactively restore options to keep the conversation loop going. */
 export function getAutoRestoreOptions(userText, lastBotText, phase) {
-  const followUp = isFollowUpSelection(userText);
+  if (!lastBotText) return null;
 
-  if (followUp) {
-    return WELCOME_OPTIONS;
+  if (botAskedToChooseAnotherOption(lastBotText) || botTurnNeedsLoopQuestion(lastBotText, phase)) {
+    return null;
   }
 
-  if (!lastBotText) return null;
+  if (phase === 'awaiting_loop_decision') {
+    if (isAffirmative(userText) && botAskedToChooseAnotherOption(lastBotText)) {
+      return WELCOME_OPTIONS;
+    }
+    return null;
+  }
 
   const inServiceFlow =
     isServiceSelection(userText) || phase === 'service_selected' || phase === 'in_conversation';
 
   if (inServiceFlow) {
-    if (botTurnCompleteForMenuRestore(lastBotText)) {
-      return WELCOME_OPTIONS;
-    }
-    // After Q&A (not a fresh service pick), loop back to the service menu
-    if (phase === 'in_conversation') {
-      return WELCOME_OPTIONS;
-    }
     if (isServiceSelection(userText) || botAskedToBookOrLearnMore(lastBotText)) {
       return FOLLOW_UP_OPTIONS;
+    }
+    if (isExactPriceButton(userText)) {
+      return getPostPriceOptions();
     }
   }
 
