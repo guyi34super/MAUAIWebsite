@@ -34,7 +34,9 @@ function useCookieVisible() {
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const cookieVisible = useCookieVisible();
-  const { messages, options, loading, sending, syncing, error, ready, sendMessage, retry } = useChat();
+  const { messages, options, loading, sending, syncing, error, ready, sendMessage, retry } = useChat({
+    isOpen: open,
+  });
 
   const prefersReducedMotion =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

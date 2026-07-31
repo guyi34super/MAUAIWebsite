@@ -5,8 +5,8 @@ const AGENT_ID = process.env.CHATBOT_AGENT_ID || 'agent_2102692c-a4b6-4c98-9280-
 const API_KEY = process.env.CHATBOT_API_KEY;
 const MAX_TEXT_LENGTH = 2000;
 const MESSAGE_LIMIT = 30;
-const SEND_WAIT_POLLS_MS = [0, 200, 400, 600, 1000, 1500, 2000, 3000, 5000];
-const SEND_WAIT_TIMEOUT_MS = 60_000;
+
+export const maxDuration = 60;
 
 const upstreamAgent = new Agent({
   keepAliveTimeout: 60_000,
@@ -14,10 +14,14 @@ const upstreamAgent = new Agent({
   connections: 10,
 });
 
-function upstreamUrl(conversationId) {
+function upstreamUrl(conversationId, { after, limit } = {}) {
   const base = `${API_BASE}/api/bots/${AGENT_ID}/messages`;
-  if (!conversationId) return base;
-  return `${base}?conversationId=${encodeURIComponent(conversationId)}`;
+  const params = new URLSearchParams();
+  if (conversationId) params.set('conversationId', conversationId);
+  if (after) params.set('after', after);
+  if (limit) params.set('limit', String(limit));
+  const qs = params.toString();
+  return qs ? `${base}?${qs}` : base;
 }
 
 function jsonResponse(res, status, body) {
@@ -32,25 +36,6 @@ function trimMessages(data) {
     return data;
   }
   return { ...data, messages: data.messages.slice(-MESSAGE_LIMIT) };
-}
-
-function hasOutboundReply(messages) {
-  if (!messages?.length) return false;
-  const lastUserIdx = messages.findLastIndex((m) => m.direction === 'inbound');
-  if (lastUserIdx === -1) return false;
-  return messages
-    .slice(lastUserIdx + 1)
-    .some((m) => m.direction === 'outbound' && String(m.text || '').trim());
-}
-
-function lastOutboundReply(messages) {
-  const lastUserIdx = messages.findLastIndex((m) => m.direction === 'inbound');
-  const outbound = messages.slice(lastUserIdx + 1).filter((m) => m.direction === 'outbound');
-  return outbound[outbound.length - 1] || null;
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function forwardUpstream(method, url, body) {
@@ -79,42 +64,6 @@ async function forwardUpstream(method, url, body) {
   return { status: response.status, data };
 }
 
-async function postAndWait(conversationId, text) {
-  const { status, data: postData } = await forwardUpstream('POST', upstreamUrl(), {
-    text: text.trim(),
-    conversationId,
-  });
-
-  if (postData?.reply || hasOutboundReply(postData?.messages)) {
-    return { status, data: trimMessages(postData) };
-  }
-
-  const deadline = Date.now() + SEND_WAIT_TIMEOUT_MS;
-  for (const delay of SEND_WAIT_POLLS_MS) {
-    if (Date.now() > deadline) break;
-    if (delay > 0) await sleep(delay);
-
-    const { status: getStatus, data: getData } = await forwardUpstream(
-      'GET',
-      upstreamUrl(conversationId)
-    );
-    if (!hasOutboundReply(getData?.messages)) continue;
-
-    const lastBot = lastOutboundReply(getData.messages);
-    return {
-      status: getStatus,
-      data: trimMessages({
-        ...getData,
-        conversationId: getData.conversationId || conversationId,
-        reply: postData?.reply || lastBot?.text || '',
-        options: postData?.options?.length ? postData.options : lastBot?.options || [],
-      }),
-    };
-  }
-
-  return { status, data: trimMessages(postData) };
-}
-
 export default async function handler(req, res) {
   if (!API_KEY) {
     return jsonResponse(res, 401, { error: 'Chatbot API key is not configured' });
@@ -126,8 +75,13 @@ export default async function handler(req, res) {
       return jsonResponse(res, 400, { error: 'conversationId is required' });
     }
 
+    const after = typeof req.query?.after === 'string' ? req.query.after : undefined;
+
     try {
-      const { status, data } = await forwardUpstream('GET', upstreamUrl(conversationId));
+      const { status, data } = await forwardUpstream(
+        'GET',
+        upstreamUrl(conversationId, { after, limit: MESSAGE_LIMIT })
+      );
       return jsonResponse(res, status, trimMessages(data));
     } catch {
       return jsonResponse(res, 502, { error: 'Failed to reach chatbot service' });
@@ -148,8 +102,11 @@ export default async function handler(req, res) {
     }
 
     try {
-      const { status, data } = await postAndWait(conversationId, text);
-      return jsonResponse(res, status, data);
+      const { status, data } = await forwardUpstream('POST', upstreamUrl(), {
+        text: text.trim(),
+        conversationId,
+      });
+      return jsonResponse(res, status, trimMessages(data));
     } catch {
       return jsonResponse(res, 502, { error: 'Failed to reach chatbot service' });
     }

@@ -7,7 +7,6 @@ import {
 } from '../content/chatbot.js';
 
 const CONVERSATION_STORAGE_KEY = 'mauai-chat-conversation-id-v4';
-const WELCOME_CACHE_KEY = 'mauai-chat-welcome-cache-v2';
 export const WELCOME_PLACEHOLDER_ID = 'welcome-placeholder';
 const INTERNAL_MARKER_RE = /__\w+__/g;
 export { AUTO_GREETING };
@@ -26,7 +25,6 @@ export const WELCOME_PLACEHOLDER = {
 export function createConversationId() {
   try {
     localStorage.removeItem(CONVERSATION_STORAGE_KEY);
-    sessionStorage.removeItem(WELCOME_CACHE_KEY);
   } catch {
     // storage unavailable
   }
@@ -56,6 +54,21 @@ export function cleanBotText(text) {
     .map((line) => line.replace(/\s{2,}/g, ' ').trim())
     .join('\n')
     .trim();
+}
+
+/** Build instant service intro from local CHAT_SERVICES data (no API wait). */
+export function buildServiceIntroReply(serviceTitle) {
+  const normalized = normalizeServiceSelection(serviceTitle);
+  const service = CHAT_SERVICES.find((s) => s.title === normalized);
+  if (!service) return '';
+
+  const lines = [service.title, service.description];
+  if (service.features?.length) {
+    for (const feature of service.features) {
+      lines.push(`- ${feature}`);
+    }
+  }
+  return lines.join('\n');
 }
 
 /** Remove booking CTAs, pricing, and upsell questions from the first service intro reply. */
@@ -488,6 +501,10 @@ export function isPriceSelection(text) {
 
 export function isExactPriceButton(text) {
   return String(text).trim().toLowerCase() === 'price';
+}
+
+export function isPriceCacheFlow(text) {
+  return isExactPriceButton(text) || isBookOrderSelection(text);
 }
 
 export function isFollowUpSelection(text) {

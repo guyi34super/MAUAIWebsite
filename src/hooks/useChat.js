@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AUTO_GREETING } from '../content/chatbot.js';
 import { fetchMessages, sendMessage as sendMessageApi } from '../lib/chatApi';
+import { getCachedPriceReply } from '../lib/chatCache';
 import {
   createConversationId,
   dedupeMessages,
@@ -16,9 +17,9 @@ import {
   isBookOrderSelection,
   buildBookOrderReply,
   buildPriceReply,
-  cleanBotText,
+  buildServiceIntroReply,
   getBookOrderContactBlock,
-  hasPricingContent,
+  getLastSelectedServiceTitle,
   ANOTHER_SERVICE_QUESTION_TEXT,
   BOOK_DECISION_QUESTION_TEXT,
   isExactPriceButton,
@@ -26,6 +27,7 @@ import {
   isFollowUpOptionSet,
   isLoopOptionSet,
   isNegative,
+  isPriceCacheFlow,
   isServiceSelection,
   isWelcomeMenuText,
   isWelcomeOptionSet,
@@ -77,7 +79,8 @@ function mapVisibleMessages(messages) {
 }
 
 function hasSubstantivePostReply(postData) {
-  return Boolean(postData?.reply && !isWelcomeMenuText(postData.reply));
+  if (postData?.reply && !isWelcomeMenuText(postData.reply)) return true;
+  return hasSubstantiveBotReplyAfterUser(postData);
 }
 
 function keepLatestBotReplyPerTurn(messages) {
@@ -180,6 +183,53 @@ function applyPostDataThread(postData, applyThread) {
   }
 }
 
+function isLocalOnlyBotMessage(message) {
+  if (message?.role !== 'bot') return false;
+  const id = String(message.id || '');
+  return (
+    id.startsWith('local-') ||
+    id.startsWith('cached-') ||
+    id.startsWith('book-contact-') ||
+    id.startsWith('another-service-') ||
+    id.startsWith('goodbye-')
+  );
+}
+
+/** Keep instant local bot replies when a late server sync has user turns but no bot reply yet. */
+function mergeLocalBotReplies(prev, serverVisible) {
+  const prevSorted = [...prev].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
+  const serverSorted = [...serverVisible].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
+  const merged = [...serverSorted];
+
+  for (const localBot of prevSorted.filter(isLocalOnlyBotMessage)) {
+    const botIdx = prevSorted.findIndex((m) => m.id === localBot.id);
+    const userBefore = [...prevSorted.slice(0, botIdx)].reverse().find((m) => m.role === 'user');
+    if (!userBefore) continue;
+
+    const serverUserIdx = serverSorted.findLastIndex(
+      (m) => m.role === 'user' && m.text === userBefore.text
+    );
+    if (serverUserIdx === -1) continue;
+
+    const hasServerBotAfter = serverSorted
+      .slice(serverUserIdx + 1)
+      .some((m) => m.role === 'bot' && String(m.text || '').trim());
+    if (hasServerBotAfter) continue;
+
+    const insertAfterIdx = merged.findLastIndex(
+      (m) => m.role === 'user' && m.text === userBefore.text
+    );
+    if (insertAfterIdx === -1) continue;
+    merged.splice(insertAfterIdx + 1, 0, localBot);
+  }
+
+  return keepLatestBotReplyPerTurn(dedupeMessages(merged));
+}
+
 function resolveTurnOptions({
   text,
   lastBotText,
@@ -273,7 +323,7 @@ function applyFinalOptions(finalOptions, phase, phaseRef, setOptions) {
   }
 }
 
-export default function useChat() {
+export default function useChat({ isOpen = false } = {}) {
   const conversationIdRef = useRef(createConversationId());
   const greetingStartedRef = useRef(false);
   const conversationPhaseRef = useRef('welcome');
@@ -281,6 +331,10 @@ export default function useChat() {
   const requestAbortRef = useRef(null);
 
   const [messages, setMessages] = useState([]);
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
   const [options, setOptions] = useState(WELCOME_OPTIONS);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
@@ -302,10 +356,12 @@ export default function useChat() {
       const pending = prev.filter(
         (m) => m.id.startsWith('pending-') && !serverUserTexts.has(m.text)
       );
-      return dedupeMessages([
+      const serverWithPendingUsers = dedupeMessages([
         ...visible,
         ...pending.filter((p) => !visible.some((m) => m.role === 'user' && m.text === p.text)),
       ]);
+      const merged = mergeLocalBotReplies(prev, serverWithPendingUsers);
+      return merged;
     });
     const nextOptions = getLatestOptions(mapped, { allowMenu: allowMenuOptions });
     if (updateOptions && (nextOptions.length > 0 || allowMenuOptions)) {
@@ -374,12 +430,15 @@ export default function useChat() {
   }, [pollThread]);
 
   useEffect(() => {
-    if (greetingStartedRef.current) return undefined;
+    if (!isOpen || greetingStartedRef.current) return undefined;
     greetingStartedRef.current = true;
-
     const conversationId = conversationIdRef.current;
     sendMessageApi(conversationId, AUTO_GREETING)
       .then((postData) => {
+        const userAlreadyActive = messagesRef.current.some(
+          (m) => m.role === 'user' && !shouldHideAutoGreeting(m)
+        );
+        if (userAlreadyActive) return;
         if (hasSubstantivePostReply(postData)) {
           applyPostDataThread(postData, applyThread);
           return;
@@ -389,9 +448,8 @@ export default function useChat() {
         }
       })
       .catch(() => {});
-
     return undefined;
-  }, [applyThread]);
+  }, [isOpen, applyThread]);
 
   const sendMessage = useCallback(
     async (rawText) => {
@@ -504,8 +562,59 @@ export default function useChat() {
         return;
       }
 
+      if (isServiceSelection(text) && !isFollowUpSelection(text)) {
+        const introText = buildServiceIntroReply(text);
+        setMessages((prev) =>
+          buildThreadWithBotReply(
+            prev,
+            optimisticId,
+            text,
+            introText,
+            `local-intro-${Date.now()}`
+          )
+        );
+        setOptions(FOLLOW_UP_OPTIONS);
+        conversationPhaseRef.current = 'service_selected';
+        setSending(false);
+        setSyncing(false);
+        sendMessageApi(conversationId, text).catch(() => {});
+        return;
+      }
+
+      if (isPriceCacheFlow(text)) {
+        const serviceTitle = getLastSelectedServiceTitle(messagesRef.current);
+        const cached = serviceTitle ? getCachedPriceReply(serviceTitle) : null;
+        if (cached) {
+          const replyText = isExactPriceButton(text)
+            ? buildPriceReply(cached)
+            : buildBookOrderReply(cached);
+          setMessages((prev) =>
+            buildThreadWithBotReply(
+              prev,
+              optimisticId,
+              text,
+              replyText,
+              `cached-${Date.now()}`
+            )
+          );
+          const { finalOptions, phase } = resolveTurnOptions({
+            text,
+            lastBotText: replyText,
+            wasAwaitingAnotherService,
+            wasAwaitingBook,
+            effectiveApiOptions: [],
+            phaseRef: conversationPhaseRef,
+            setMessages,
+          });
+          applyFinalOptions(finalOptions, phase, conversationPhaseRef, setOptions);
+          setSending(false);
+          setSyncing(false);
+          sendMessageApi(conversationId, text).catch(() => {});
+          return;
+        }
+      }
+
       let postApiOptions = [];
-      let postReplyText = '';
 
       try {
         const postData = await sendMessageApi(conversationId, text, { signal });
@@ -514,59 +623,24 @@ export default function useChat() {
           applyPostDataThread(postData, applyThread);
         }
 
+        let postReplyText = '';
         if (hasSubstantivePostReply(postData)) {
           postReplyText = isServiceSelection(text)
             ? stripInitialServiceBooking(postData.reply)
             : postData.reply;
-          if (isExactPriceButton(text)) {
-            postReplyText = buildPriceReply(postReplyText);
-          }
         }
 
         let gotReply = hasSubstantivePostReply(postData);
-        let lastBotText = postReplyText;
+        let lastBotText = postReplyText || getLastBotTextFromData(postData);
         let effectiveApiOptions = postApiOptions;
 
-        if (isBookOrderSelection(text)) {
-          let priceText = postReplyText;
-          if (!hasPricingContent(priceText)) {
-            const priceData = await sendMessageApi(conversationId, 'Price', { signal });
-            if (hasSubstantivePostReply(priceData)) {
-              priceText = cleanBotText(priceData.reply);
-            } else {
-              const pricePoll = await pollThread(POLL_DELAYS_MS, {
-                waitForReplyAfterUser: true,
-                signal: pollAbortRef.current.signal,
-              });
-              if (pricePoll.lastBotText) {
-                priceText = cleanBotText(pricePoll.lastBotText);
-              }
-            }
-          } else {
-            priceText = cleanBotText(priceText);
-          }
-          postReplyText = buildBookOrderReply(priceText);
-          lastBotText = postReplyText;
-          gotReply = Boolean(postReplyText);
+        if (hasSubstantivePostReply(postData)) {
           setMessages((prev) =>
             buildThreadWithBotReply(
               prev,
               optimisticId,
               text,
-              postReplyText,
-              `reply-${Date.now()}`
-            )
-          );
-        } else if (hasSubstantivePostReply(postData)) {
-          const replyForThread = isExactPriceButton(text)
-            ? buildPriceReply(cleanBotText(postData.reply))
-            : postData.reply;
-          setMessages((prev) =>
-            buildThreadWithBotReply(
-              prev,
-              optimisticId,
-              text,
-              replyForThread,
+              postReplyText || lastBotText,
               `reply-${Date.now()}`
             )
           );
@@ -576,7 +650,7 @@ export default function useChat() {
           }
         }
 
-        if (!isBookOrderSelection(text) && !gotReply) {
+        if (!gotReply) {
           const pollResult = await pollThread(POLL_DELAYS_MS, {
             waitForReplyAfterUser: true,
             signal: pollAbortRef.current.signal,
@@ -586,7 +660,7 @@ export default function useChat() {
           effectiveApiOptions = mapApiOptions(
             pollResult.apiOptions.length ? pollResult.apiOptions : postApiOptions
           );
-        } else if (!isBookOrderSelection(text) && postData.options?.length) {
+        } else if (postData.options?.length) {
           effectiveApiOptions = postApiOptions;
         }
 
