@@ -16,6 +16,7 @@ import {
   isBookOrderSelection,
   buildBookOrderReply,
   buildPriceReply,
+  buildServiceIntroReply,
   cleanBotText,
   getBookOrderContactBlock,
   hasPricingContent,
@@ -77,7 +78,8 @@ function mapVisibleMessages(messages) {
 }
 
 function hasSubstantivePostReply(postData) {
-  return Boolean(postData?.reply && !isWelcomeMenuText(postData.reply));
+  if (postData?.reply && !isWelcomeMenuText(postData.reply)) return true;
+  return hasSubstantiveBotReplyAfterUser(postData);
 }
 
 function keepLatestBotReplyPerTurn(messages) {
@@ -498,6 +500,25 @@ export default function useChat() {
         ]);
         setOptions(LOOP_DECISION_OPTIONS);
         conversationPhaseRef.current = 'awaiting_another_service';
+        setSending(false);
+        setSyncing(false);
+        sendMessageApi(conversationId, text).catch(() => {});
+        return;
+      }
+
+      if (isServiceSelection(text) && !isFollowUpSelection(text)) {
+        const introText = buildServiceIntroReply(text);
+        setMessages((prev) =>
+          buildThreadWithBotReply(
+            prev,
+            optimisticId,
+            text,
+            introText,
+            `local-intro-${Date.now()}`
+          )
+        );
+        setOptions(FOLLOW_UP_OPTIONS);
+        conversationPhaseRef.current = 'service_selected';
         setSending(false);
         setSyncing(false);
         sendMessageApi(conversationId, text).catch(() => {});

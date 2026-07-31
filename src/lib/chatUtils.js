@@ -58,6 +58,21 @@ export function cleanBotText(text) {
     .trim();
 }
 
+/** Build instant service intro from local CHAT_SERVICES data (no API wait). */
+export function buildServiceIntroReply(serviceTitle) {
+  const normalized = normalizeServiceSelection(serviceTitle);
+  const service = CHAT_SERVICES.find((s) => s.title === normalized);
+  if (!service) return '';
+
+  const lines = [service.title, service.description];
+  if (service.features?.length) {
+    for (const feature of service.features) {
+      lines.push(`- ${feature}`);
+    }
+  }
+  return lines.join('\n');
+}
+
 /** Remove booking CTAs, pricing, and upsell questions from the first service intro reply. */
 export function stripInitialServiceBooking(text) {
   if (!text) return '';
