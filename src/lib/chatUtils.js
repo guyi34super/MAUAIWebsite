@@ -7,7 +7,6 @@ import {
 } from '../content/chatbot.js';
 
 const CONVERSATION_STORAGE_KEY = 'mauai-chat-conversation-id-v4';
-const WELCOME_CACHE_KEY = 'mauai-chat-welcome-cache-v2';
 export const WELCOME_PLACEHOLDER_ID = 'welcome-placeholder';
 const INTERNAL_MARKER_RE = /__\w+__/g;
 export { AUTO_GREETING };
@@ -26,7 +25,6 @@ export const WELCOME_PLACEHOLDER = {
 export function createConversationId() {
   try {
     localStorage.removeItem(CONVERSATION_STORAGE_KEY);
-    sessionStorage.removeItem(WELCOME_CACHE_KEY);
   } catch {
     // storage unavailable
   }
@@ -503,6 +501,10 @@ export function isPriceSelection(text) {
 
 export function isExactPriceButton(text) {
   return String(text).trim().toLowerCase() === 'price';
+}
+
+export function isPriceCacheFlow(text) {
+  return isExactPriceButton(text) || isBookOrderSelection(text);
 }
 
 export function isFollowUpSelection(text) {
