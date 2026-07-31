@@ -6,18 +6,37 @@ import {
   dedupeMessages,
   getAutoRestoreOptions,
   getLatestOptions,
+  getPostPriceOptions,
   hasSubstantiveBotReplyAfterUser,
+  botAskedToChooseAnotherOption,
+  botAskedToBookOrLearnMore,
+  botTurnNeedsLoopQuestion,
+  isAffirmative,
+  isBookOrderOptionSet,
+  isBookOrderSelection,
+  isExactPriceButton,
   isFollowUpSelection,
   isFollowUpOptionSet,
+  isLoopOptionSet,
+  isNegative,
   isServiceSelection,
   isWelcomeMenuText,
   isWelcomeOptionSet,
   mapApiMessage,
+  normalizeServiceSelection,
   resolveRestoredOptions,
   sanitizeMessageText,
+  sanitizeServiceIntroMessages,
   shouldHideAutoGreeting,
   shouldReshowMenu,
   stripWelcomeMenuMessages,
+  stripInitialServiceBooking,
+  FOLLOW_UP_OPTIONS,
+  BOOK_ORDER_OPTIONS,
+  BOOK_ORDER_PROMPT,
+  LOOP_DECISION_OPTIONS,
+  LOOP_GOODBYE_TEXT,
+  LOOP_QUESTION_TEXT,
   WELCOME_OPTIONS,
 } from '../lib/chatUtils';
 
@@ -80,10 +99,49 @@ function getLastBotTextFromData(data) {
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
   );
   const lastUserIndex = sorted.findLastIndex((m) => m.role === 'user');
+  const lastUser = sorted[lastUserIndex];
   const botsAfterUser = sorted.slice(lastUserIndex + 1).filter((m) => m.role === 'bot');
   const lastBot = botsAfterUser[botsAfterUser.length - 1];
   if (!lastBot || isWelcomeMenuText(lastBot.rawText ?? lastBot.text)) return '';
-  return lastBot.text || '';
+  let text = lastBot.text || '';
+  if (
+    lastUser?.role === 'user' &&
+    isServiceSelection(lastUser.text) &&
+    !isFollowUpSelection(lastUser.text)
+  ) {
+    text = stripInitialServiceBooking(lastBot.rawText ?? lastBot.text);
+  }
+  return text;
+}
+
+function buildThreadWithBotReply(prev, optimisticId, userText, botReplyRaw, botMessageId) {
+  const withoutPending = prev.filter((m) => m.id !== optimisticId);
+  const userMessage = prev.find((m) => m.id === optimisticId) || {
+    id: optimisticId,
+    role: 'user',
+    text: userText,
+    createdAt: new Date().toISOString(),
+    options: [],
+  };
+  const botText = isServiceSelection(userText)
+    ? stripInitialServiceBooking(botReplyRaw)
+    : botReplyRaw;
+  const mapped = mapApiMessage({
+    id: botMessageId,
+    direction: 'outbound',
+    text: botText,
+    created_at: new Date().toISOString(),
+    options: [],
+  });
+  return sanitizeServiceIntroMessages(
+    keepLatestBotReplyPerTurn(
+      dedupeMessages([
+        ...stripWelcomeMenuMessages(mapVisibleMessages(withoutPending)),
+        userMessage,
+        mapped,
+      ])
+    )
+  );
 }
 
 function mapApiOptions(options) {
@@ -112,8 +170,10 @@ export default function useChat() {
 
   const applyThread = useCallback((data, { allowMenuOptions = false, updateOptions = true } = {}) => {
     const mapped = dedupeMessages((data.messages || []).map(mapApiMessage));
-    const visible = keepLatestBotReplyPerTurn(
-      stripWelcomeMenuMessages(mapVisibleMessages(mapped))
+    const visible = sanitizeServiceIntroMessages(
+      keepLatestBotReplyPerTurn(
+        stripWelcomeMenuMessages(mapVisibleMessages(mapped))
+      )
     );
     setMessages((prev) => {
       const serverUserTexts = new Set(
@@ -188,13 +248,20 @@ export default function useChat() {
 
   const sendMessage = useCallback(
     async (rawText) => {
-      const text = sanitizeMessageText(rawText);
+      const text = normalizeServiceSelection(sanitizeMessageText(rawText));
       if (!text || sending) return;
 
       const conversationId = conversationIdRef.current;
       const optimisticId = `pending-${Date.now()}`;
+      const wasAwaitingLoop = conversationPhaseRef.current === 'awaiting_loop_decision';
 
-      if (isServiceSelection(text)) {
+      if (wasAwaitingLoop) {
+        if (isAffirmative(text)) {
+          conversationPhaseRef.current = 'welcome';
+        } else if (isNegative(text)) {
+          conversationPhaseRef.current = 'closed';
+        }
+      } else if (isServiceSelection(text)) {
         conversationPhaseRef.current = 'service_selected';
       } else if (isFollowUpSelection(text)) {
         conversationPhaseRef.current = 'in_conversation';
@@ -211,26 +278,71 @@ export default function useChat() {
       setSyncing(true);
       setError(null);
 
+      if (wasAwaitingLoop && isAffirmative(text)) {
+        setOptions(WELCOME_OPTIONS);
+        conversationPhaseRef.current = 'welcome';
+        setSending(false);
+        setSyncing(false);
+        sendMessageApi(conversationId, text).catch(() => {});
+        return;
+      }
+
+      if (wasAwaitingLoop && isNegative(text)) {
+        setOptions([]);
+        conversationPhaseRef.current = 'closed';
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `goodbye-${Date.now()}`,
+            role: 'bot',
+            text: LOOP_GOODBYE_TEXT,
+            createdAt: new Date().toISOString(),
+            options: [],
+          },
+        ]);
+        setSending(false);
+        setSyncing(false);
+        sendMessageApi(conversationId, text).catch(() => {});
+        return;
+      }
+
+      if (isBookOrderSelection(text)) {
+        conversationPhaseRef.current = 'book_order_sub';
+        setOptions(BOOK_ORDER_OPTIONS);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `book-prompt-${Date.now()}`,
+            role: 'bot',
+            text: BOOK_ORDER_PROMPT,
+            createdAt: new Date().toISOString(),
+            options: [],
+          },
+        ]);
+        setSending(false);
+        setSyncing(false);
+        sendMessageApi(conversationId, text).catch(() => {});
+        return;
+      }
+
       let postApiOptions = [];
       let postReplyText = '';
 
       try {
         const postData = await sendMessageApi(conversationId, text);
         if (postData.reply && !isWelcomeMenuText(postData.reply)) {
-          postReplyText = postData.reply;
-          setMessages((prev) => {
-            const withoutPending = prev.filter((m) => m.id !== optimisticId);
-            const mapped = mapApiMessage({
-              id: `reply-${Date.now()}`,
-              direction: 'outbound',
-              text: postData.reply,
-              created_at: new Date().toISOString(),
-              options: postData.options || [],
-            });
-            return keepLatestBotReplyPerTurn(
-              dedupeMessages([...stripWelcomeMenuMessages(withoutPending), mapped])
-            );
-          });
+          postReplyText = isServiceSelection(text)
+            ? stripInitialServiceBooking(postData.reply)
+            : postData.reply;
+          setMessages((prev) =>
+            buildThreadWithBotReply(
+              prev,
+              optimisticId,
+              text,
+              postData.reply,
+              `reply-${Date.now()}`
+            )
+          );
           if (postData.options?.length) {
             postApiOptions = mapApiOptions(postData.options);
             setOptions(postApiOptions);
@@ -250,8 +362,62 @@ export default function useChat() {
 
         let finalOptions = [];
 
-        if (isFollowUpSelection(text)) {
+        if (wasAwaitingLoop && isAffirmative(text)) {
           finalOptions = WELCOME_OPTIONS;
+          conversationPhaseRef.current = 'welcome';
+        } else if (wasAwaitingLoop && isNegative(text)) {
+          finalOptions = [];
+          conversationPhaseRef.current = 'closed';
+        } else if (isAffirmative(text) && botAskedToChooseAnotherOption(lastBotText)) {
+          finalOptions = WELCOME_OPTIONS;
+          conversationPhaseRef.current = 'welcome';
+        } else if (isNegative(text) && botAskedToChooseAnotherOption(lastBotText)) {
+          finalOptions = [];
+          conversationPhaseRef.current = 'closed';
+        } else if (isServiceSelection(text)) {
+          finalOptions = FOLLOW_UP_OPTIONS;
+          conversationPhaseRef.current = 'service_selected';
+        } else if (isExactPriceButton(text)) {
+          finalOptions = getPostPriceOptions();
+          conversationPhaseRef.current = 'service_selected';
+        } else if (botAskedToChooseAnotherOption(lastBotText)) {
+          conversationPhaseRef.current = 'awaiting_loop_decision';
+          finalOptions = LOOP_DECISION_OPTIONS;
+        } else if (/^more information$/i.test(text)) {
+          conversationPhaseRef.current = 'awaiting_loop_decision';
+          finalOptions = LOOP_DECISION_OPTIONS;
+          if (!botAskedToChooseAnotherOption(lastBotText)) {
+            setMessages((prev) => {
+              const result = keepLatestBotReplyPerTurn(prev);
+              const lastBotIdx = result.findLastIndex((m) => m.role === 'bot');
+              if (lastBotIdx < 0) return prev;
+              const bot = result[lastBotIdx];
+              if (bot.text.includes(LOOP_QUESTION_TEXT)) return prev;
+              result[lastBotIdx] = {
+                ...bot,
+                text: `${bot.text}\n\n${LOOP_QUESTION_TEXT}`,
+              };
+              return result;
+            });
+          }
+        } else if (botTurnNeedsLoopQuestion(lastBotText, conversationPhaseRef.current)) {
+          conversationPhaseRef.current = 'awaiting_loop_decision';
+          finalOptions = LOOP_DECISION_OPTIONS;
+          setMessages((prev) => {
+            const result = keepLatestBotReplyPerTurn(prev);
+            const lastBotIdx = result.findLastIndex((m) => m.role === 'bot');
+            if (lastBotIdx < 0) return prev;
+            const bot = result[lastBotIdx];
+            if (bot.text.includes(LOOP_QUESTION_TEXT)) return prev;
+            result[lastBotIdx] = {
+              ...bot,
+              text: `${bot.text}\n\n${LOOP_QUESTION_TEXT}`,
+            };
+            return result;
+          });
+        } else if (isFollowUpSelection(text)) {
+          finalOptions =
+            getAutoRestoreOptions(text, lastBotText, conversationPhaseRef.current) || [];
         } else if (effectiveApiOptions.length && isServiceSelection(text)) {
           finalOptions = effectiveApiOptions;
         } else if (effectiveApiOptions.length && !isFollowUpOptionSet(effectiveApiOptions)) {
@@ -265,9 +431,19 @@ export default function useChat() {
 
         if (finalOptions.length) {
           setOptions(finalOptions);
-          conversationPhaseRef.current = isWelcomeOptionSet(finalOptions)
-            ? 'welcome'
-            : 'service_selected';
+          if (isWelcomeOptionSet(finalOptions)) {
+            conversationPhaseRef.current = 'welcome';
+          } else if (isLoopOptionSet(finalOptions)) {
+            conversationPhaseRef.current = 'awaiting_loop_decision';
+          } else if (isBookOrderOptionSet(finalOptions)) {
+            conversationPhaseRef.current = 'book_order_sub';
+          } else {
+            conversationPhaseRef.current = 'service_selected';
+          }
+        } else if (
+          conversationPhaseRef.current === 'closed'
+        ) {
+          setOptions([]);
         }
 
         if (!gotReply) {
