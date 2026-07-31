@@ -1,6 +1,8 @@
 import {
   AUTO_GREETING,
   CHAT_SERVICES,
+  CONTACT_EMAIL,
+  CONTACT_URL,
   WELCOME_OPTIONS,
 } from '../content/chatbot.js';
 
@@ -284,17 +286,74 @@ export function linkifyMessageText(text) {
 export const FOLLOW_UP_OPTIONS = [
   { label: 'Book / order', value: 'Book / order' },
   { label: 'Price', value: 'Price' },
-  { label: 'More information', value: 'More information' },
 ];
 
-export const BOOK_ORDER_OPTIONS = [
-  { label: 'Price', value: 'Price' },
-  { label: 'More information', value: 'More information' },
-];
+export function getBookOrderContactBlock() {
+  return `To book or place an order, contact us:\n${CONTACT_URL}\nEmail: ${CONTACT_EMAIL}`;
+}
 
-export const BOOK_ORDER_PROMPT = 'What would you like to know?';
+export function hasPricingContent(text) {
+  const lower = String(text).toLowerCase();
+  return (
+    /\bmur\b/.test(lower) ||
+    /\bprice\b/.test(lower) ||
+    /\bpricing\b/.test(lower) ||
+    /\bas from\b/.test(lower)
+  );
+}
 
-export const LOOP_QUESTION_TEXT = 'Do you want to choose another option?';
+/** Strip booking/contact upsell from API price replies; UI already shows contact details. */
+export function stripBookOrderApiFluff(text) {
+  if (!text) return '';
+  return cleanBotText(
+    String(text)
+      .replace(/\s*let me know if you(?:'d| would) like to proceed[^.?\n]*[.?!]?\s*/gi, ' ')
+      .replace(/\s*would you like to proceed[^.?\n]*[.?!]?\s*/gi, ' ')
+      .replace(/\s*to proceed with booking[^.?\n]*[.?!]?\s*/gi, ' ')
+      .replace(/\s*please visit our contact page[^.?\n]*[.?!]?\s*/gi, ' ')
+      .replace(/\s*discuss your requirements[^.?\n]*[.?!]?\s*/gi, ' ')
+      .replace(/\s*secure your quote[^.?\n]*[.?!]?\s*/gi, ' ')
+      .replace(/https?:\/\/[^\s]*\/contact[^\s]*/gi, '')
+      .replace(/mailto:[^\s]+/gi, '')
+      .replace(/\s*book here:?\s*/gi, ' ')
+      .replace(/\s*book a free consultation[^.!\n]*[.!]?\s*/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  );
+}
+
+export function extractPricingLine(text) {
+  const cleaned = stripBookOrderApiFluff(text);
+  const murMatch = cleaned.match(/[^\n.]*\bmur\b[^\n.]*/i);
+  if (murMatch) return murMatch[0].trim();
+  const priceMatch = cleaned.match(/[^\n.]*\b(?:price|pricing)\b[^\n.]*/i);
+  if (priceMatch) return priceMatch[0].trim();
+  return cleaned;
+}
+
+export function buildPriceReply(priceText) {
+  const priceLine = extractPricingLine(priceText);
+  let body = priceLine || stripBookOrderApiFluff(priceText);
+  body = body
+    .replace(/\s*do you want to choose another option\??\s*/gi, ' ')
+    .replace(/\s*do you want another service\??\s*/gi, ' ')
+    .replace(/\s*do you want to order or book\??\s*/gi, ' ')
+    .trim();
+  return `${body}\n\n${BOOK_DECISION_QUESTION_TEXT}`.trim();
+}
+
+export function buildBookOrderReply(priceText) {
+  const priceLine = extractPricingLine(priceText);
+  const body = priceLine || stripBookOrderApiFluff(priceText);
+  return `${getBookOrderContactBlock()}\n\n${body}\n\n${ANOTHER_SERVICE_QUESTION_TEXT}`.trim();
+}
+
+export const BOOK_DECISION_QUESTION_TEXT = 'Do you want to order or book?';
+
+export const ANOTHER_SERVICE_QUESTION_TEXT = 'Do you want another service?';
+
+/** @deprecated Use ANOTHER_SERVICE_QUESTION_TEXT */
+export const LOOP_QUESTION_TEXT = ANOTHER_SERVICE_QUESTION_TEXT;
 
 export const LOOP_GOODBYE_TEXT = 'Thank you from the team and see you later!';
 
@@ -314,7 +373,10 @@ const OTHER_SERVICES_RE =
   /\b(anything else|other services|another service|explore other|see our services|pick another|different service|what else|our other services|explore our other)\b/i;
 
 const CHOOSE_ANOTHER_OPTION_RE =
-  /\b(choose another option|would you like to choose another|want to choose another|pick another option|select another service|explore another service)\b/i;
+  /\b(choose another option|another service|would you like to choose another|want to choose another|pick another option|select another service|explore another service|do you want another service)\b/i;
+
+const BOOK_DECISION_RE =
+  /\b(do you want to order or book|want to order or book|order or book)\b/i;
 
 const BOOK_OR_MORE_RE =
   /\b(book a consultation|book a free consultation|more information|tell you more|like to book|free consultation|get more information|book or order)\b/i;
@@ -333,6 +395,14 @@ export function botAskedForOtherServices(text) {
 
 export function botAskedToChooseAnotherOption(text) {
   return CHOOSE_ANOTHER_OPTION_RE.test(String(text).trim());
+}
+
+export function botAskedBookDecision(text) {
+  return BOOK_DECISION_RE.test(String(text).trim());
+}
+
+export function botAskedForAnotherService(text) {
+  return botAskedToChooseAnotherOption(text);
 }
 
 /** Bot finished a service turn but did not ask the gated loop question yet. */
@@ -411,13 +481,6 @@ export function isBookOrderSelection(text) {
   return String(text).trim().toLowerCase() === 'book / order';
 }
 
-export function isBookOrderSubSelection(text) {
-  const value = String(text).trim().toLowerCase();
-  return BOOK_ORDER_OPTIONS.some(
-    (opt) => opt.value.toLowerCase() === value || opt.label.toLowerCase() === value
-  );
-}
-
 export function isPriceSelection(text) {
   const value = String(text).trim().toLowerCase();
   return value === 'price' || isPricingQuestion(text);
@@ -425,14 +488,6 @@ export function isPriceSelection(text) {
 
 export function isExactPriceButton(text) {
   return String(text).trim().toLowerCase() === 'price';
-}
-
-export function isBookOrderOptionSet(options) {
-  if (!options?.length || options.length !== BOOK_ORDER_OPTIONS.length) return false;
-  return options.every((opt, i) => {
-    const label = (opt.label || opt.value || '').toLowerCase();
-    return label === BOOK_ORDER_OPTIONS[i].label.toLowerCase();
-  });
 }
 
 export function isFollowUpSelection(text) {
@@ -503,10 +558,14 @@ export function getAutoRestoreOptions(userText, lastBotText, phase) {
     return null;
   }
 
-  if (phase === 'awaiting_loop_decision') {
-    if (isAffirmative(userText) && botAskedToChooseAnotherOption(lastBotText)) {
+  if (phase === 'awaiting_another_service' || phase === 'awaiting_loop_decision') {
+    if (isAffirmative(userText) && botAskedForAnotherService(lastBotText)) {
       return WELCOME_OPTIONS;
     }
+    return null;
+  }
+
+  if (phase === 'awaiting_book_decision') {
     return null;
   }
 
