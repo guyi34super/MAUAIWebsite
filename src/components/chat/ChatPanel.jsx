@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Send, X } from 'lucide-react';
 import ChatMessage from './ChatMessage';
-import { MAX_MESSAGE_LENGTH, isBookOrderOptionSet, isLoopOptionSet, isWelcomeOptionSet } from '../../lib/chatUtils';
+import { MAX_MESSAGE_LENGTH, isLoopOptionSet, isWelcomeOptionSet } from '../../lib/chatUtils';
 
 function optionLabel(option) {
   if (typeof option === 'string') return option;
@@ -49,14 +49,11 @@ export default function ChatPanel({ onClose, messages, options, loading, sending
   const showTyping = syncing || bootstrapping;
   const showWelcomeOptions = isWelcomeOptionSet(options);
   const showLoopOptions = isLoopOptionSet(options);
-  const showBookOrderOptions = isBookOrderOptionSet(options);
   const optionsLabel = showWelcomeOptions
     ? 'Choose a service:'
     : showLoopOptions
       ? 'Yes or no:'
-      : showBookOrderOptions
-        ? 'Choose one:'
-        : 'Choose an option:';
+      : 'Choose an option:';
 
   return (
     <div className="site-chat__panel" role="dialog" aria-label="Chat with MO">
@@ -97,7 +94,7 @@ export default function ChatPanel({ onClose, messages, options, loading, sending
       {options.length > 0 && (
         <div className="site-chat__options-wrap">
           <p className="site-chat__options-label">{optionsLabel}</p>
-          <div className={`site-chat__options${showLoopOptions || showBookOrderOptions ? ' site-chat__options--row' : ''}`}>
+          <div className={`site-chat__options${showLoopOptions ? ' site-chat__options--row' : ''}`}>
             {options.map((option, i) => {
               const label = optionLabel(option);
               if (!label) return null;
