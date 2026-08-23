@@ -35,6 +35,7 @@ const header = `
     <nav aria-label="Primary">
       <a href="/">Home</a>
       <a href="/services">AI Services</a>
+      <a href="/portfolio">Portfolio</a>
       <a href="/docs">Documentation</a>
       <a href="/contact">Contact</a>
     </nav>
@@ -161,6 +162,39 @@ const servicesPage = `
 
     <p><a href="/contact">Book a free consultation</a> to find out which AI solutions
     will make the biggest impact on your business in Mauritius or Africa.</p>
+  </article>`;
+
+const portfolioPage = `
+  <article>
+    <p>Our work</p>
+    <h1>Portfolio — MO Intelligence</h1>
+    <p>Selected AI-powered websites and digital products built for hospitality and real estate.</p>
+    <h2>Featured Projects</h2>
+    <ul>
+      <li><strong><a href="/portfolio/ile-elan">Ile Elan</a>.</strong> Luxury hotel booking website.
+      <a href="https://my-project-hotel2.vercel.app/" rel="noopener noreferrer">View live demo</a></li>
+      <li><strong><a href="/portfolio/lakaz">Lakaz</a>.</strong> Real estate property marketplace.
+      <a href="https://my-project-hotel.vercel.app/" rel="noopener noreferrer">View live demo</a></li>
+    </ul>
+    <p><a href="/contact">Start your project</a> · <a href="/">Back to home</a></p>
+  </article>`;
+
+const ileElanPage = `
+  <article>
+    <p>Portfolio</p>
+    <h1>Ile Elan — Luxury Hotel Booking Website</h1>
+    <p>A premium hotel booking experience with elegant design, room browsing, and seamless reservation flows built for luxury hospitality brands.</p>
+    <p><a href="https://my-project-hotel2.vercel.app/" rel="noopener noreferrer">View live demo</a> ·
+    <a href="/portfolio">Back to portfolio</a></p>
+  </article>`;
+
+const lakazPage = `
+  <article>
+    <p>Portfolio</p>
+    <h1>Lakaz — Real Estate Property Marketplace</h1>
+    <p>A modern property marketplace for browsing listings, comparing homes, and connecting buyers with real estate opportunities.</p>
+    <p><a href="https://my-project-hotel.vercel.app/" rel="noopener noreferrer">View live demo</a> ·
+    <a href="/portfolio">Back to portfolio</a></p>
   </article>`;
 
 const contactPage = `
@@ -297,6 +331,30 @@ const routes = [
     description:
       "Explore MO Intelligence's full range of AI services: AI chatbots, AI virtual receptionists, custom AI automation, AI website development, AI marketing, AI voice interfaces, SEO, AI SEO, and Research and Development for businesses in Mauritius and Africa.",
     body: servicesPage,
+  },
+  {
+    out: 'portfolio/index.html',
+    path: '/portfolio',
+    title: 'Portfolio — MO Intelligence',
+    description:
+      'Explore MO Intelligence portfolio projects: Ile Elan luxury hotel booking and Lakaz real estate marketplace — AI-powered websites built for Mauritius and Africa.',
+    body: portfolioPage,
+  },
+  {
+    out: 'portfolio/ile-elan/index.html',
+    path: '/portfolio/ile-elan',
+    title: 'Ile Elan — Portfolio — MO Intelligence',
+    description:
+      'Ile Elan: luxury hotel booking website. A premium hotel booking experience built for luxury hospitality brands.',
+    body: ileElanPage,
+  },
+  {
+    out: 'portfolio/lakaz/index.html',
+    path: '/portfolio/lakaz',
+    title: 'Lakaz — Portfolio — MO Intelligence',
+    description:
+      'Lakaz: real estate property marketplace. A modern property marketplace for browsing listings and connecting buyers.',
+    body: lakazPage,
   },
   {
     out: 'contact/index.html',
