@@ -25,7 +25,7 @@ export const PORTFOLIO_PROJECTS = [
     tagline: 'AI business portal',
     description:
       'A secure business portal with login, dashboards, and AI-powered tools to manage operations, insights, and customer workflows in one place.',
-    url: 'https://my-project-ai-website.vercel.app/login',
+    url: 'https://my-project-ai-website.vercel.app/',
     Icon: Briefcase,
   },
 ];
