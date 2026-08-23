@@ -1,4 +1,4 @@
-import { Hotel, Home } from 'lucide-react';
+import { Hotel, Home, Briefcase } from 'lucide-react';
 
 export const PORTFOLIO_PROJECTS = [
   {
@@ -18,6 +18,15 @@ export const PORTFOLIO_PROJECTS = [
       'A modern property marketplace for browsing listings, comparing homes, and connecting buyers with real estate opportunities.',
     url: 'https://my-project-hotel.vercel.app/',
     Icon: Home,
+  },
+  {
+    slug: 'ai-business-portal',
+    title: 'AI Business Portal',
+    tagline: 'AI business portal',
+    description:
+      'A secure business portal with login, dashboards, and AI-powered tools to manage operations, insights, and customer workflows in one place.',
+    url: 'https://my-project-ai-website.vercel.app/login',
+    Icon: Briefcase,
   },
 ];
 
