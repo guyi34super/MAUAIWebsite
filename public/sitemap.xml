@@ -40,6 +40,13 @@
   </url>
 
   <url>
+    <loc>https://moi-ai.dev/portfolio/ai-business-portal</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc>https://moi-ai.dev/contact</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>

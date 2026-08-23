@@ -175,6 +175,8 @@ const portfolioPage = `
       <a href="https://my-project-hotel2.vercel.app/" rel="noopener noreferrer">View live demo</a></li>
       <li><strong><a href="/portfolio/lakaz">Lakaz</a>.</strong> Real estate property marketplace.
       <a href="https://my-project-hotel.vercel.app/" rel="noopener noreferrer">View live demo</a></li>
+      <li><strong><a href="/portfolio/ai-business-portal">AI Business Portal</a>.</strong> AI business portal.
+      <a href="https://my-project-ai-website.vercel.app/login" rel="noopener noreferrer">View live demo</a></li>
     </ul>
     <p><a href="/contact">Start your project</a> · <a href="/">Back to home</a></p>
   </article>`;
@@ -194,6 +196,15 @@ const lakazPage = `
     <h1>Lakaz — Real Estate Property Marketplace</h1>
     <p>A modern property marketplace for browsing listings, comparing homes, and connecting buyers with real estate opportunities.</p>
     <p><a href="https://my-project-hotel.vercel.app/" rel="noopener noreferrer">View live demo</a> ·
+    <a href="/portfolio">Back to portfolio</a></p>
+  </article>`;
+
+const aiBusinessPortalPage = `
+  <article>
+    <p>Portfolio</p>
+    <h1>AI Business Portal</h1>
+    <p>A secure business portal with login, dashboards, and AI-powered tools to manage operations, insights, and customer workflows in one place.</p>
+    <p><a href="https://my-project-ai-website.vercel.app/login" rel="noopener noreferrer">View live demo</a> ·
     <a href="/portfolio">Back to portfolio</a></p>
   </article>`;
 
@@ -337,7 +348,7 @@ const routes = [
     path: '/portfolio',
     title: 'Portfolio — MO Intelligence',
     description:
-      'Explore MO Intelligence portfolio projects: Ile Elan luxury hotel booking and Lakaz real estate marketplace — AI-powered websites built for Mauritius and Africa.',
+      'Explore MO Intelligence portfolio projects: Ile Elan luxury hotel booking, Lakaz real estate marketplace, and AI Business Portal — AI-powered websites built for Mauritius and Africa.',
     body: portfolioPage,
   },
   {
@@ -355,6 +366,14 @@ const routes = [
     description:
       'Lakaz: real estate property marketplace. A modern property marketplace for browsing listings and connecting buyers.',
     body: lakazPage,
+  },
+  {
+    out: 'portfolio/ai-business-portal/index.html',
+    path: '/portfolio/ai-business-portal',
+    title: 'AI Business Portal — Portfolio — MO Intelligence',
+    description:
+      'AI Business Portal: secure login, dashboards, and AI-powered tools for managing business operations and customer workflows.',
+    body: aiBusinessPortalPage,
   },
   {
     out: 'contact/index.html',

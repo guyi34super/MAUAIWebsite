@@ -9,9 +9,9 @@ export default function Portfolio() {
   useSEO({
     title: 'Portfolio — MO Intelligence',
     description:
-      'Explore MO Intelligence portfolio projects: Ile Elan luxury hotel booking and Lakaz real estate marketplace — AI-powered websites built for Mauritius and Africa.',
+      'Explore MO Intelligence portfolio projects: Ile Elan luxury hotel booking, Lakaz real estate marketplace, and AI Business Portal — AI-powered websites built for Mauritius and Africa.',
     keywords:
-      'MO Intelligence portfolio, AI website Mauritius, hotel booking website, real estate marketplace Africa, Ile Elan, Lakaz',
+      'MO Intelligence portfolio, AI website Mauritius, hotel booking website, real estate marketplace Africa, AI business portal, Ile Elan, Lakaz',
     url: 'https://moi-ai.dev/portfolio',
   });
 
