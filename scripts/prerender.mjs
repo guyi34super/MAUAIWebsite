@@ -176,7 +176,7 @@ const portfolioPage = `
       <li><strong><a href="/portfolio/lakaz">Lakaz</a>.</strong> Real estate property marketplace.
       <a href="https://my-project-hotel.vercel.app/" rel="noopener noreferrer">View live demo</a></li>
       <li><strong><a href="/portfolio/ai-business-portal">AI Business Portal</a>.</strong> AI business portal.
-      <a href="https://my-project-ai-website.vercel.app/login" rel="noopener noreferrer">View live demo</a></li>
+      <a href="https://my-project-ai-website.vercel.app/" rel="noopener noreferrer">View live demo</a></li>
     </ul>
     <p><a href="/contact">Start your project</a> · <a href="/">Back to home</a></p>
   </article>`;
@@ -204,7 +204,7 @@ const aiBusinessPortalPage = `
     <p>Portfolio</p>
     <h1>AI Business Portal</h1>
     <p>A secure business portal with login, dashboards, and AI-powered tools to manage operations, insights, and customer workflows in one place.</p>
-    <p><a href="https://my-project-ai-website.vercel.app/login" rel="noopener noreferrer">View live demo</a> ·
+    <p><a href="https://my-project-ai-website.vercel.app/" rel="noopener noreferrer">View live demo</a> ·
     <a href="/portfolio">Back to portfolio</a></p>
   </article>`;
 
