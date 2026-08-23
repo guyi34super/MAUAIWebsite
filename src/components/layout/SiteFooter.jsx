@@ -9,6 +9,7 @@ export default function SiteFooter() {
         <div className="site-footer__links">
           <Link to="/">Home</Link>
           <Link to="/services">Services</Link>
+          <Link to="/portfolio">Portfolio</Link>
           <Link to="/docs">Docs</Link>
           <Link to="/contact">Contact</Link>
           <Link to="/privacy">Privacy</Link>

@@ -4,6 +4,8 @@ import LoadingScreen from './components/LoadingScreen';
 import AppLayout from './components/layout/AppLayout';
 import Home from './pages/Home';
 import Services from './pages/Services';
+import Portfolio from './pages/Portfolio';
+import PortfolioProject from './pages/PortfolioProject';
 import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
 import DocsIndex from './pages/docs/DocsIndex';
@@ -43,6 +45,8 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/portfolio/:slug" element={<PortfolioProject />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/docs" element={<DocsIndex />} />

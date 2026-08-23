@@ -6,6 +6,7 @@ import Logo from '../Logo';
 const NAV_LINKS = [
   ['/', 'Home'],
   ['/services', 'Services'],
+  ['/portfolio', 'Portfolio'],
   ['/docs', 'Docs'],
   ['/contact', 'Contact'],
 ];
@@ -19,8 +20,11 @@ export default function SiteHeader({ docsMode = false, onDocsMenuClick }) {
     document.body.style.overflow = '';
   }, [pathname]);
 
-  const isActive = (to) =>
-    to === '/docs' ? pathname.startsWith('/docs') : pathname === to;
+  const isActive = (to) => {
+    if (to === '/docs') return pathname.startsWith('/docs');
+    if (to === '/portfolio') return pathname.startsWith('/portfolio');
+    return pathname === to;
+  };
 
   const toggleMenu = () => {
     const next = !menuOpen;
