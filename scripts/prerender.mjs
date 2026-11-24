@@ -48,7 +48,7 @@ const footer = `
     <p>Email: <a href="mailto:team.mau.ai@gmail.com">team.mau.ai@gmail.com</a> ·
     <a href="https://moi-ai.dev">https://moi-ai.dev</a></p>
     <p>AI Chatbots · AI Virtual Receptionists · Custom AI Automation ·
-    AI Website Development · AI Marketing · AI Voice Interfaces ·
+    AI Website Development · AI Marketing · AI Voice Interfaces · AI Consultancy ·
     SEO · AI SEO · Research and Development</p>
   </footer>`;
 
@@ -59,6 +59,7 @@ const services = [
   ['AI Website Development', 'Modern, high-performance websites enhanced with AI for lead generation, customer engagement, personalised content and intelligent automation.'],
   ['AI Marketing', 'AI-powered marketing for lead generation, content creation, audience segmentation, automated campaign management and ROI optimisation.'],
   ['AI Voice Interfaces', 'Voice-enabled AI assistants for phone and IVR integration, handling inquiries, bookings and customer interactions in multiple languages.'],
+  ['AI Consultancy', 'Strategic guidance on where AI fits in your business. We assess your workflows, identify high-impact opportunities, and build a practical roadmap for adopting AI, from first pilot to full rollout. Start with a free 15-minute call to discuss your needs.'],
 ];
 
 const serviceList = `<ul>${services
@@ -105,6 +106,7 @@ const home = `
       <li>Bhavish Nobeen — Director of Technology</li>
       <li>Rushal Seeruthun — Director of Engineering</li>
       <li>Taj Aundoo — Director of Operations</li>
+      <li>Abdul Kareem Zahid — Director of Sales</li>
     </ul>
 
     <h2>Industries We Serve</h2>

@@ -1,5 +1,5 @@
 import {
-  Bot, UserCheck, Settings2, Globe, Megaphone, Mic2,
+  Bot, UserCheck, Settings2, Globe, Megaphone, Mic2, Compass,
   Clock, TrendingUp, DollarSign, Zap, Scaling, Target,
   Building2, Hotel, Home as HomeIcon, Briefcase, GraduationCap,
   ShoppingCart, Landmark, MapPin,
@@ -12,6 +12,7 @@ export const SERVICES = [
   { Icon: Globe, title: 'AI Website Development', desc: 'Modern websites enhanced with AI for lead generation, customer engagement, automation and intelligent user experiences.' },
   { Icon: Megaphone, title: 'AI Marketing', desc: 'AI-powered marketing for lead generation, content creation, customer targeting and campaign optimisation.' },
   { Icon: Mic2, title: 'AI Voice Interfaces', desc: 'Voice-enabled AI assistants handling inquiries, bookings and customer interactions with natural, human-like conversation.' },
+  { Icon: Compass, title: 'AI Consultancy', desc: 'Strategic guidance on where AI fits in your business. We assess your workflows, identify high-impact opportunities, and build a practical roadmap for adopting AI, from first pilot to full rollout. Start with a free 15-minute call to discuss your needs.' },
 ];
 
 export const SERVICES_DETAILED = [
@@ -50,6 +51,12 @@ export const SERVICES_DETAILED = [
     title: 'AI Voice Interfaces',
     desc: 'Voice-enabled AI assistants capable of handling inquiries, bookings, and customer interactions with natural, human-like conversation.',
     features: ['Natural language voice processing', 'Phone and IVR system integration', 'Booking and inquiry handling', 'Multi-language voice support', 'Voice analytics and reporting'],
+  },
+  {
+    Icon: Compass,
+    title: 'AI Consultancy',
+    desc: 'Strategic guidance on where AI fits in your business. We assess your workflows, identify high-impact opportunities, and build a practical roadmap for adopting AI, from first pilot to full rollout. Start with a free 15-minute call to discuss your needs.',
+    features: ['Free 15-minute introductory call', 'Workflow and process assessment', 'Identification of high-impact AI opportunities', 'Practical AI adoption roadmap', 'Guidance from first pilot to full rollout'],
   },
 ];
 
@@ -99,4 +106,5 @@ export const TEAM = [
   ['Bhavish Nobeen', 'Director of Technology'],
   ['Rushal Seeruthun', 'Director of Engineering'],
   ['Taj Aundoo', 'Director of Operations'],
+  ['Abdul Kareem Zahid', 'Director of Sales'],
 ];

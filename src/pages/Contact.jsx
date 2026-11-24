@@ -13,6 +13,7 @@ const SERVICES = [
   'AI Website Development',
   'AI Marketing',
   'AI Voice Interfaces',
+  'AI Consultancy',
   'SEO',
   'AI SEO',
   'Research and Development',
